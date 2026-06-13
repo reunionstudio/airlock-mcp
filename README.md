@@ -6,12 +6,17 @@ Airlock.
 It covers the full Airlock loop:
 
 - build specs with the Airlock Smith capability
-- use specs to pull and push governed data
+- use specs to pull and push governed data with the Airlock Star capability
 - validate, create, and revise specs against installed Airlock
 - capture real use cases and improvements so specs get better over time
 
 Airlock Smith is not a second thing users install. It is the spec-building
 capability inside Airlock MCP.
+
+Airlock Star is not a second thing users install either. It is the capability
+inside Airlock MCP for working through real Airlock use cases,
+pulling and pushing data through specs, reading outputs, and turning experience
+back into better specs.
 
 ## Install
 
@@ -41,8 +46,8 @@ codex mcp add airlock -- npx -y github:reunionstudio/airlock-mcp server
 ```
 
 The server exposes bootstrap guidance for starting a specs repo and entering
-the Airlock Smith spec-building capability. The current Smith implementation
-lives at:
+the Airlock Smith spec-building capability or the Airlock Star use-and-improve
+capability. The current Smith implementation lives at:
 
 ```text
 https://github.com/reunionstudio/airlock-smith
@@ -85,7 +90,8 @@ The intended user flow is:
 2. Open Codex.
 3. Create a blank project repo named for the org or project, such as
    `home-specs`.
-4. Ask Codex to use Airlock to help build and use specs.
+4. Ask Codex to use Airlock MCP to help build specs with Smith and use specs
+   with Star.
 5. Let Airlock MCP bootstrap the project, welcome the user, and offer the next
    useful path before creating the first workspace.
 

@@ -27,7 +27,8 @@ assert.match(install.stdout, /codex mcp add airlock -- npx -y @airlock\/mcp serv
 assert.match(install.stdout, /home-specs/);
 assert.match(install.stdout, /Do not create/);
 assert.match(install.stdout, /Airlock MCP will offer/);
-assert.match(install.stdout, /using specs to pull and push governed data/);
+assert.match(install.stdout, /pulling and pushing governed data through specs/);
+assert.match(install.stdout, /Airlock Star/);
 
 assert.equal(specsRepoName("Home"), "home-specs");
 assert.equal(specsRepoName("home-specs"), "home-specs");
@@ -136,8 +137,10 @@ assert.equal(responses[3].result.resources[0].uri, "airlock://getting-started");
 assert.equal(responses[3].result.resources[0].name, "Airlock getting started");
 assert.match(responses[4].result.content[0].text, /single installed interface/);
 assert.match(responses[4].result.content[0].text, /pull and push governed data/);
+assert.match(responses[4].result.content[0].text, /Airlock Star is the use-and-improve capability/);
 assert.match(responses[5].result.messages[0].content.text, /Airlock MCP/);
 assert.match(responses[6].result.contents[0].text, /Airlock Smith is the spec-building capability/);
+assert.match(responses[6].result.contents[0].text, /Airlock Star is the use-and-improve capability/);
 assert.equal(responses[7].error.code, -32601);
 assert.equal(responses[8].error.code, -32700);
 

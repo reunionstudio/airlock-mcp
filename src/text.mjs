@@ -41,8 +41,8 @@ ${airlockPrompt(project)
 
 Airlock MCP will offer:
   - spec-building with Airlock Smith
-  - guidance for using specs to pull and push governed data
-  - improvement loops based on real Airlock use cases
+  - spec use and improvement loops with Airlock Star
+  - guidance for pulling and pushing governed data through specs
   - OODA brainstorming for possible specs
   - a blank workspace for a known process
   - a posts feedback loop for shared human/agent feedback`;
@@ -59,6 +59,11 @@ Airlock Smith is the spec-building capability inside Airlock MCP. Use it when a
 spec needs to be drafted, checked, revised, imported, cloned, or prepared for
 installed Airlock validation.
 
+Airlock Star is the use-and-improve capability inside Airlock MCP. Use it when
+someone wants to pull or push governed data through specs, exercise real
+Airlock workflows, inspect outputs, or turn field experience into spec
+improvements.
+
 Start in a blank project specs repo such as ${specsRepoName(project)}. Do not
 work inside the Airlock MCP or Airlock Smith implementation repos unless you
 are changing the tools themselves.
@@ -73,8 +78,8 @@ After bootstrap, choose the next useful path:
 2. Start from a known process and create a blank workspace.
 3. Create a posts feedback loop for humans and agents to submit requests,
    observations, and responses.
-4. Use an installed Airlock app to validate specs, load data, read outputs, or
-   plan push/pull workflows through specs.
+4. Use Airlock Star with an installed Airlock app to validate specs, load data,
+   read outputs, plan push/pull workflows, and capture improvements.
 
 Create posts only when the user chooses the feedback-loop path.`;
 }
@@ -99,5 +104,6 @@ Options:
 
 Airlock MCP is the single installed interface for agents working with Airlock.
 Airlock Smith is the spec-building capability inside that experience.
+Airlock Star is the use-and-improve capability inside that experience.
 `;
 }
