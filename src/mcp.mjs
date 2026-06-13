@@ -44,10 +44,10 @@ export function handleMcpRequest(message) {
       },
       serverInfo: {
         name: "airlock",
-        version: "0.1.0",
+        version: "0.1.1",
       },
       instructions:
-        "Airlock MCP helps agents build and use Airlock specs. Use airlock_start for orientation or the airlock_* tools to bootstrap, draft, check, summarize, export, and render specs.",
+        "Airlock MCP helps agents improve processes with Airlock specs. Use airlock_start for orientation or the airlock_* tools to bootstrap, draft, check, summarize, export, and render specs.",
     });
   }
 

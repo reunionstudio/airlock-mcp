@@ -21,10 +21,15 @@ export function airlockPrompt(project) {
   const repoName = specsRepoName(project);
   return `I want to use Airlock MCP to start working with Airlock specs for ${repoName}.
 
-Set up this project as an Airlock specs repo. Use Airlock MCP
-spec-building when we need to draft or revise specs. Welcome me,
-help me think through real Airlock use cases, and ask only for the missing
-decisions. Do not create the first workspace until I choose a path.`;
+Set up this project as an Airlock specs repo. Welcome me by asking what
+process I want to improve. Explain that Airlock works best when we can
+identify the loop around that process: what information comes in, what context
+helps us understand it, what decision needs to be made, and what action happens
+after the decision. Information may come from apps, files, forms, people,
+emails, calls, mail, websites, APIs, data feeds, or physical events. Actions
+may go back through those same places. Ask for the messy version, then help
+turn it into a small first Airlock spec and a plan for more. Do not create the
+first workspace until I choose a path.`;
 }
 
 export function nextSteps(project) {
@@ -40,28 +45,29 @@ ${airlockPrompt(project)
   .join("\n")}
 
 Airlock MCP will offer:
-  - spec-building with the bundled workbench
-  - spec use and improvement loops with Airlock Star
-  - guidance for pulling and pushing governed data through specs
-  - OODA brainstorming for possible specs
-  - a blank workspace for a known process
-  - a posts feedback loop for shared human/agent feedback`;
+  - process discovery before choosing a spec pattern
+  - spec design with the bundled workbench
+  - Airlock operating patterns for OODA loops and separation of duties
+  - observe specs for controlled interface ingestion
+  - orient specs for proposals, context, scoring, or exception queues
+  - decision specs and action specs for governed follow-through`;
 }
 
 export function gettingStartedText(project) {
   return `# Airlock MCP
 
 Airlock MCP is the single installed interface for AI agents working with
-Airlock. It helps a person and their agent build specs, pull and push governed data
-through specs, and improve Airlock workflows from real use cases.
+Airlock. It helps a person and their agent improve processes by designing
+specs, using specs for governed data movement, and planning OODA loops that
+can be assisted by people or agents.
 
-The Airlock MCP spec-building workbench drafts, checks, revises, imports,
-clones, and prepares specs for installed Airlock validation.
+Airlock MCP gives agents two kinds of Airlock expertise:
 
-Airlock Star is the use-and-improve capability inside Airlock MCP. Use it when
-someone wants to pull or push governed data through specs, exercise real
-Airlock workflows, inspect outputs, or turn field experience into spec
-improvements.
+1. Spec design: draft, check, revise, import, clone, and prepare specs for
+   installed Airlock validation.
+2. Airlock operating patterns: use specs to organize observations, orientation,
+   governed decisions, controlled actions, separation of duties, and feedback
+   loops.
 
 Start in a blank project specs repo such as ${specsRepoName(project)}. Do not
 work inside the Airlock MCP implementation repo unless you are changing the
@@ -71,16 +77,22 @@ Use this prompt in the blank specs repo:
 
 ${airlockPrompt(project)}
 
-After bootstrap, choose the next useful path:
+First ask: What process do you want to improve?
 
-1. Brainstorm possible specs using the OODA loop.
-2. Start from a known process and create a blank workspace.
-3. Create a posts feedback loop for humans and agents to submit requests,
-   observations, and responses.
-4. Use Airlock Star with an installed Airlock app to validate specs, load data,
-   read outputs, plan push/pull workflows, and capture improvements.
+Airlock works best when we can identify the loop around a process:
 
-Create posts only when the user chooses the feedback-loop path.`;
+1. Observe: what information comes in.
+2. Orient: what context helps people or agents understand it.
+3. Decide: what choice needs to be governed.
+4. Act: what happens after the decision.
+
+Information may come from apps, files, forms, people, emails, calls, mail,
+websites, APIs, data feeds, or physical events. Actions may go back through
+those same places. Airlock calls these places interfaces: where the process
+observes from or acts through.
+
+Give Codex the messy version of the process. Airlock MCP should help turn it
+into a small first Airlock spec and a plan for more.`;
 }
 
 export function helpText() {
@@ -103,6 +115,7 @@ Options:
 
 Airlock MCP is the single installed interface for agents working with Airlock.
 Spec building is bundled inside that experience.
-Airlock Star is the use-and-improve capability inside that experience.
+Airlock operating patterns help connect specs into OODA loops, separation of
+duties, governed decisions, controlled actions, and feedback loops.
 `;
 }

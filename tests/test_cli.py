@@ -169,7 +169,7 @@ class CliTests(unittest.TestCase):
             self.assertTrue((root / ".agents" / "skills" / "airlock-mcp" / "SKILL.md").exists())
             self.assertTrue((root / ".agents" / "skills" / "airlock-mcp" / "agents" / "openai.yaml").exists())
             self.assertIn("initialized", output)
-            self.assertIn("Choose OODA brainstorming", output)
+            self.assertIn("What process do you want to improve", output)
             self.assertIn("Use Airlock to help me build and use specs", output)
 
             skill = (root / ".agents" / "skills" / "airlock-mcp" / "SKILL.md").read_text(encoding="utf-8")
@@ -213,6 +213,7 @@ class CliTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             self.assertIn("next:", output)
             self.assertIn("decisions.md", output)
+            self.assertIn("messy process goal", output)
 
             exit_code, _output, stderr = run_cli(["restore", str(root / "beta")])
             self.assertEqual(exit_code, 2)
@@ -295,7 +296,7 @@ States, pushback, due dates, order, or cadence: local validation before Airlock 
 
             exit_code, output, _stderr = run_cli(["next", str(workspace)])
             self.assertEqual(exit_code, 0)
-            self.assertIn("Fill in decisions.md", output)
+            self.assertIn("Record the messy process goal", output)
 
             decisions_path = workspace / "decisions.md"
             decisions_path.write_text(
@@ -309,7 +310,7 @@ States, pushback, due dates, order, or cadence: local validation before Airlock 
             exit_code, output, _stderr = run_cli(["next", str(workspace)])
             self.assertEqual(exit_code, 0)
             self.assertIn("Export sample CSV", output)
-            self.assertNotIn("Fill in decisions.md", output)
+            self.assertNotIn("Record the messy process goal", output)
 
     def test_export_csv_refuses_invalid_workspace(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -373,7 +374,8 @@ States, pushback, due dates, order, or cadence: local validation before Airlock 
         self.assertIn("npx @reunionstudio/airlock-mcp install", install_surface)
         self.assertIn("codex mcp add airlock", install_surface)
         self.assertIn("single installed interface", install_surface)
-        self.assertIn("pull and push governed data", install_surface)
+        self.assertIn("operating patterns around observe", install_surface)
+        self.assertIn("orient, decide, and act", install_surface)
         self.assertIn("Prefer Rust with `rmcp`", install_surface)
         self.assertIn("stdout is the JSON-RPC protocol channel", install_surface)
 

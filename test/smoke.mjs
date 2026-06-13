@@ -38,8 +38,9 @@ assert.match(install.stdout, /codex mcp add airlock -- npx -y @reunionstudio\/ai
 assert.match(install.stdout, /home-specs/);
 assert.match(install.stdout, /Do not create/);
 assert.match(install.stdout, /Airlock MCP will offer/);
-assert.match(install.stdout, /pulling and pushing governed data through specs/);
-assert.match(install.stdout, /Airlock Star/);
+assert.match(install.stdout, /process discovery before choosing a spec pattern/);
+assert.match(install.stdout, /Airlock operating patterns/);
+assert.doesNotMatch(install.stdout, /Airlock Star/);
 
 assert.equal(specsRepoName("Home"), "home-specs");
 assert.equal(specsRepoName("home-specs"), "home-specs");
@@ -192,7 +193,7 @@ const input = [
     params: {
       protocolVersion: "2025-06-18",
       capabilities: {},
-      clientInfo: { name: "test", version: "0.1.0" },
+      clientInfo: { name: "test", version: "0.1.1" },
     },
   },
   { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
@@ -235,6 +236,7 @@ const responses = server.stdout
 
 assert.equal(responses.length, 9);
 assert.equal(responses[0].result.serverInfo.name, "airlock");
+assert.equal(responses[0].result.serverInfo.version, "0.1.1");
 assert.equal(responses[1].result.tools[0].name, "airlock_start");
 assert.equal(responses[1].result.tools[0].description, "Return Airlock MCP setup guidance for building and using Airlock specs.");
 assert.equal(responses[2].result.prompts[0].name, "airlock-start");
@@ -242,11 +244,14 @@ assert.equal(responses[2].result.prompts[0].title, "Start Airlock");
 assert.equal(responses[3].result.resources[0].uri, "airlock://getting-started");
 assert.equal(responses[3].result.resources[0].name, "Airlock getting started");
 assert.match(responses[4].result.content[0].text, /single installed interface/);
-assert.match(responses[4].result.content[0].text, /pull and push governed data/);
-assert.match(responses[4].result.content[0].text, /Airlock Star is the use-and-improve capability/);
+assert.match(responses[4].result.content[0].text, /What process do you want to improve/);
+assert.match(responses[4].result.content[0].text, /Airlock calls these places interfaces/);
+assert.doesNotMatch(responses[4].result.content[0].text, /Airlock Star/);
 assert.match(responses[5].result.messages[0].content.text, /Airlock MCP/);
-assert.match(responses[6].result.contents[0].text, /spec-building workbench drafts/);
-assert.match(responses[6].result.contents[0].text, /Airlock Star is the use-and-improve capability/);
+assert.match(responses[5].result.messages[0].content.text, /process I want to improve/);
+assert.match(responses[6].result.contents[0].text, /Spec design: draft, check, revise/);
+assert.match(responses[6].result.contents[0].text, /Airlock operating patterns/);
+assert.doesNotMatch(responses[6].result.contents[0].text, /Airlock Star/);
 assert.equal(responses[7].error.code, -32601);
 assert.equal(responses[8].error.code, -32700);
 

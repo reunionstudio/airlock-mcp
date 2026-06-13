@@ -233,8 +233,24 @@ def next_steps(workspace: Path) -> str:
         lines.append(f"2. Run `airlock-mcp summary {workspace}` to confirm the shape.")
         return "\n".join(lines)
     if _text_has_open_placeholders(workspace / "decisions.md"):
-        lines.append("1. Fill in decisions.md for row grain, identifiers, time, evidence, access, and OODA.")
-        lines.append(f"2. Run `airlock-mcp next {workspace}` when the design notes are current.")
+        spec_name = ""
+        if isinstance(spec, dict):
+            core_config = spec.get("core_config")
+            if isinstance(core_config, dict):
+                spec_name = str(core_config.get("spec_name") or "")
+        if spec_name == "posts":
+            lines.append("1. Record the starter assumptions in decisions.md, or change only what is wrong.")
+            lines.append(
+                "2. Defaults: one row is one post/request/observation/response; "
+                "submitters are the owner and approved agents; evidence is optional; "
+                "posted_at is authored or captured time."
+            )
+            lines.append("3. Use posts to collect messy process feedback, then plan the first observe, orient, decide, or act spec.")
+        else:
+            lines.append("1. Record the messy process goal and first-loop assumptions in decisions.md.")
+            lines.append("2. Identify what is observed, what helps orient, what decision is governed, and what action follows.")
+            lines.append("3. Keep the first spec small and note later specs in review.md.")
+        lines.append(f"4. Run `airlock-mcp next {workspace}` when the design notes are current.")
         return "\n".join(lines)
     records = sample.get("records") if isinstance(sample, dict) else []
     if not records:

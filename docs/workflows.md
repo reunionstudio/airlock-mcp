@@ -20,10 +20,13 @@ The preferred Codex prompt is:
 ```text
 I want to use Airlock MCP to start working with Airlock specs for Home.
 
-Set up this project as an Airlock specs repo. Use the Airlock MCP
-spec-building capability when we need to draft or revise specs. Welcome me,
-help me think through real Airlock use cases, and ask only for the missing
-decisions. Do not create the first workspace until I choose a path.
+Set up this project as an Airlock specs repo. Welcome me by asking what
+process I want to improve. Explain that Airlock works best when we can
+identify the loop around that process: what information comes in, what context
+helps us understand it, what decision needs to be made, and what action happens
+after the decision. Ask for the messy version, then help turn it into a small
+first Airlock spec and a plan for more. Do not create the first workspace until
+I choose a path.
 ```
 
 When dogfooding this implementation repo before the MCP package is published,
@@ -66,26 +69,43 @@ The MCP-style flow should be:
 2. Open Codex.
 3. Create a new blank project named for the org or project, such as
    `home-specs`.
-4. Tell Codex: `Use Airlock to help me build and use specs.`
-5. Airlock MCP welcomes, offers OODA brainstorming, a known-process draft, a
-   `posts` feedback loop, or installed-Airlock validation/use.
+4. Tell Codex: `Use Airlock to help me improve a process with specs.`
+5. Airlock MCP welcomes, asks what process the user wants to improve, explains
+   the loop around the process, and proposes a small first spec plus a plan for
+   more.
 
 `init-repo` creates `AGENTS.md`, `.agents/skills/airlock-mcp/SKILL.md`, and
 `workspaces/`. That is what lets Codex understand prompts such as
 `Use $airlock-mcp` inside the specs repo.
 
-After bootstrap, offer three paths before creating a workspace:
+After bootstrap, do not start with a pattern picker. Ask:
 
-- brainstorm possible specs using the OODA loop
-- start from a known process and create a blank workspace
-- create a `posts` feedback loop for humans and agents to submit requests,
-  observations, and responses
+```text
+What process do you want to improve?
+```
+
+Then explain:
+
+- Airlock works best when we can identify what information comes in.
+- Airlock works best when we can identify what context helps people or agents
+  understand that information.
+- Airlock works best when we can identify what decision needs to be made.
+- Airlock works best when we can identify what action happens after the
+  decision.
+
+Information may come from apps, files, forms, people, emails, calls, mail,
+websites, APIs, data feeds, or physical events. Actions may go back through
+those same places. After giving examples, call these places interfaces: where
+the process observes from or acts through.
+
+Ask for the messy version. Help turn it into a small first Airlock spec and a
+plan for more.
 
 ## Start From Feedback
 
 Use this when the user chooses a shared feedback loop for humans and agents.
-If they are not sure what to model yet, offer OODA brainstorming before creating
-this workspace.
+If they are not sure what to model yet, continue process discovery before
+creating this workspace.
 
 ```bash
 airlock-mcp init feedback-loop --pattern posts

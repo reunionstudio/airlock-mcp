@@ -37,23 +37,35 @@ installed Airlock app.
 
 ## Starting A Spec Project
 
-After bootstrap, welcome the user and orient before creating a workspace. Ask
-whether they want to:
+After bootstrap, welcome the user and orient before creating a workspace. Start
+with:
 
-- brainstorm possible specs with the OODA loop
-- start from a known process they already have in mind
-- create a shared `posts` feedback loop for humans and agents to submit
-  requests, observations, and responses
+What process do you want to improve?
 
-Create `posts` only when the user chooses a feedback loop or explicitly asks
-for the posts pattern.
+Explain that Airlock works best when we can identify the loop around that
+process:
+
+1. what information comes in
+2. what context helps people or agents understand it
+3. what decision needs to be made
+4. what action happens after the decision
+
+Information may come from apps, files, forms, people, emails, calls, mail,
+websites, APIs, data feeds, or physical events. Actions may go back through
+those same places. After giving examples, call these places interfaces: where
+the process observes from or acts through.
+
+Ask for the messy version. Help turn it into a small first Airlock spec and a
+plan for more. Do not create the first workspace until the user chooses a path.
+Create `posts` only when the user wants a shared feedback loop or explicitly
+asks for the posts pattern.
 
 ## Working Style
 
 - Use the repo-scoped `$airlock-mcp` skill for spec drafting, review, and
   pattern selection.
 - Keep drafts small and concrete. Prefer one useful governed output over a
-  large speculative process map.
+  large speculative process map, then keep a plan for later specs.
 - Preserve decisions in workspace files so future Codex sessions can resume
   without relying on chat memory.
 - Use `airlock-mcp list-workspaces` before guessing which draft to resume.
@@ -78,6 +90,8 @@ Resolve these before final JSON:
 - workflow and pushback
 - references and expectations
 - delegation and agent identity
+- interfaces observed from or acted through
+- likely gaps in observations, orientation, decisions, or actions
 - observe-orient-decide-act loop
 
 Do not encode Airlock lifecycle state, reviewer notes, approval status, or
@@ -155,7 +169,7 @@ def format_bootstrap_result(result: BootstrapResult) -> str:
             "next:",
             "1. Open this repo in Codex.",
             "2. Ask: Use Airlock to help me build and use specs.",
-            "3. Choose OODA brainstorming, a known process, or a posts feedback loop.",
+            "3. Start with: What process do you want to improve?",
         ]
     )
     return "\n".join(lines)

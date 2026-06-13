@@ -13,8 +13,9 @@ npx @reunionstudio/airlock-mcp install
 
 Airlock MCP is the single installed interface for agents working with Airlock.
 Then the user opens Codex, creates a blank `<project>-specs` repo, and starts
-chatting with Airlock. Airlock MCP should cover building specs, using specs to
-pull and push governed data, and capturing improvements from real use cases.
+chatting with Airlock. Airlock MCP should start by asking what process the user
+wants to improve, then help design specs and operating patterns around observe,
+orient, decide, and act.
 
 The install command is not the spec workspace. It is the connector/setup entry
 point. The specs repo is still the durable memory.
@@ -107,6 +108,7 @@ The first release should optimize the user journey:
 
 1. install connector
 2. create blank `<project>-specs` Codex project
-3. bootstrap the spec-building capability when specs need drafting
-4. help the user use specs to validate, load, read, push, and pull data
-5. create the first workspace only after the user chooses a path
+3. ask what process the user wants to improve
+4. map where information comes in and actions go out
+5. create the first workspace only after the user chooses a small first spec
+6. keep a plan for later specs that improve the full loop

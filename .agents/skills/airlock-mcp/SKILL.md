@@ -29,22 +29,30 @@ the deterministic checker.
    any workspace.
    If the user opened the public `airlock-mcp` workbench repo as the entry
    point, help them create a separate `<slug>-specs` project repo beside it.
-3. If no workspace exists, welcome the user and offer three starting paths
-   before creating files:
-   - brainstorm possible specs using the OODA loop
-   - start from a known process and create a blank workspace
-   - create a `posts` feedback loop where humans and agents can submit
-     requests, observations, and responses
+3. If no workspace exists, welcome the user and ask:
+   `What process do you want to improve?`
+   Explain that Airlock works best when we can identify the loop around that
+   process:
+   - what information comes in
+   - what context helps people or agents understand it
+   - what decision needs to be made
+   - what action happens after the decision
+   Give examples before naming the concept: apps, files, forms, people, emails,
+   calls, mail, websites, APIs, data feeds, or physical events. Then call these
+   places interfaces: where the process observes from or acts through.
+   Ask for the messy version. Help turn it into a small first Airlock spec and
+   a plan for more. Do not create the first workspace until the user chooses a
+   path.
 4. Create `posts` only when the user chooses a feedback loop, asks for humans
    and agents to provide feedback, or explicitly requests the posts pattern.
-   If the user is unsure, offer OODA brainstorming first.
+   If the user is unsure, continue process discovery before creating files.
 5. Use `airlock-mcp import-spec <json-file> <name>` when starting from a
    spec-library file, an exported `SPEC_CONFIG`, or an existing canonical config.
 6. Use `airlock-mcp clone <source-workspace> <name>` when creating a related
    draft from an existing workspace. Treat clone like the old Streamlit UI:
    preserve the shape but deliberately reset spec identity.
 7. Keep the draft small. Prefer one useful governed output over a large
-   speculative system.
+   speculative system, then keep a plan for later specs.
 8. On later sessions, run `airlock-mcp list-workspaces` when the target draft
    is not obvious.
 9. Run `airlock-mcp summary <workspace>` and
@@ -63,7 +71,9 @@ the deterministic checker.
 
 ## Spec Design Questions
 
-Resolve these in order, and write the answers into `decisions.md`:
+Use these as an internal checklist. Do not dump the whole list into chat.
+Write resolved answers into `decisions.md` and ask the human only for missing
+or risky decisions:
 
 1. What is one row about?
 2. What systems, users, files, events, or reference data must be observed before
@@ -79,17 +89,33 @@ Resolve these in order, and write the answers into `decisions.md`:
 10. Which optional context can live in a validated `variant` field?
 11. Who submits, reviews, reads, delegates, and owns the process?
 
+## Interfaces
+
+Use interface to mean any place the process observes from or acts through.
+Do not lead with the word before examples. Interfaces can be apps, files, forms,
+people, emails, calls, mail, websites, APIs, data feeds, physical events,
+shared folders, payment tools, bank apps, or other systems.
+
+When a user names a process, map the interfaces both ways:
+
+- Observe: where information enters the loop.
+- Act: where a decision writes back to the world.
+
+Spot gaps gently. A user may have one dataset but need additional observations
+to orient well, or may rely on hard-to-automate interfaces such as phone calls
+or physical mail.
+
 ## OODA Loop
 
 Use the observe-orient-decide-act loop as the product frame:
 
-- Observe: source systems, human signals, files, screenshots, exports, APIs,
-  reference specs, and prior Airlock outputs.
-- Orient: row grain, field types, access model, evidence, workflow, references,
-  expectations, and risk.
-- Decide: the smallest governed output worth creating now.
-- Act: validate locally, create in Airlock, collect real records, then extend or
-  add the next spec based on feedback.
+- Observe: controlled interface ingestion and observation/reference specs.
+- Orient: context, proposals, scoring, exception queues, summaries, and gaps in
+  the observation set.
+- Decide: governed choices by people or agents, with identity, timestamp,
+  rationale, evidence, approval, and separation of duties.
+- Act: controlled writes back to interfaces, commitments, follow-ups, outputs,
+  and the next observations created by those actions.
 
 ## Pattern Guidance
 

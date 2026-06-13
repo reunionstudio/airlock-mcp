@@ -28,9 +28,10 @@ heavier operational tools mature.
 
 The spec-building workbench lives in this repo under `src/airlock_mcp`,
 `patterns`, `workspaces`, `schemas`, and `.agents/skills/airlock-mcp`.
-Airlock Star is the use-and-improve capability inside Airlock MCP: real use
-cases, governed pull/push through specs, output review, and improvement capture.
-It is also not a second install.
+Airlock operating patterns live in the same MCP experience: real use cases,
+controlled interface ingestion, OODA loops, governed decisions, separation of
+duties, controlled actions, output review, and improvement capture. This is not
+a second install or separate product surface.
 
 ## MCP Surface
 
@@ -45,8 +46,8 @@ The bootstrap server exposes:
   `airlock_next`, `airlock_export_csv`, and `airlock_render_sql`
 
 These give the agent enough context to start a blank `<project>-specs` repo,
-enter the spec-building workbench when specs need drafting, enter Star when
-specs need to be used or improved, and avoid creating a first workspace until
+ask what process the user wants to improve, enter the spec-building workbench
+when a first spec is ready to draft, and avoid creating a first workspace until
 the user chooses a path.
 
 Workbench tools call the bundled Python package with argument arrays and a

@@ -5,18 +5,21 @@ Airlock.
 
 It covers the full Airlock loop:
 
-- build specs with the bundled spec-building workbench
-- use specs to pull and push governed data with the Airlock Star capability
+- design specs with the bundled spec-building workbench
+- map the process a person wants to improve into observe, orient, decide, and act
+- use specs for governed data movement, decisions, actions, and feedback loops
 - validate, create, and revise specs against installed Airlock
-- capture real use cases and improvements so specs get better over time
 
 Spec building is not a second thing users install. It is bundled inside
 Airlock MCP.
 
-Airlock Star is not a second thing users install either. It is the capability
-inside Airlock MCP for working through real Airlock use cases,
-pulling and pushing data through specs, reading outputs, and turning experience
-back into better specs.
+Airlock MCP gives agents two kinds of Airlock expertise:
+
+1. Spec design: draft, check, revise, import, clone, and prepare specs for
+   installed Airlock validation.
+2. Airlock operating patterns: use specs to organize observations, orientation,
+   governed decisions, controlled actions, separation of duties, and feedback
+   loops.
 
 ## Install
 
@@ -26,7 +29,7 @@ Dogfood directly from GitHub:
 npx -y github:reunionstudio/airlock-mcp install --package github:reunionstudio/airlock-mcp
 ```
 
-After the npm package is published, use:
+Install from npm:
 
 ```bash
 npx @reunionstudio/airlock-mcp install
@@ -45,9 +48,9 @@ The GitHub dogfood command registers:
 codex mcp add airlock -- npx -y github:reunionstudio/airlock-mcp server
 ```
 
-The server exposes bootstrap guidance for starting a specs repo and entering
-the bundled spec-building workbench or the Airlock Star use-and-improve
-capability.
+The server exposes bootstrap guidance for starting a specs repo, coaching a
+person through process discovery, and entering the bundled spec-building
+workbench when a first spec is ready to draft.
 
 This install shape uses Node because `npx` runs npm package binaries. MCP itself
 does not require Node. Once Airlock MCP does real operational work, such as
@@ -116,11 +119,11 @@ The intended user flow is:
 2. Open Codex.
 3. Create a blank project repo named for the org or project, such as
    `home-specs`.
-4. Ask Codex to use Airlock MCP to help build specs and use specs with
-   Airlock Star.
-5. Let Airlock MCP bootstrap the project, welcome the user, and offer the next
-   useful path before creating the first workspace.
+4. Ask Codex to use Airlock MCP to help improve a process with Airlock specs.
+5. Let Airlock MCP bootstrap the project, ask what process the user wants to
+   improve, and propose a small first spec plus a plan for more.
 
 The first workspace should not be created automatically. The spec-building
-workbench should offer OODA brainstorming, a known-process draft, or a shared
-`posts` feedback loop.
+workbench should first ask for the messy process, identify where information
+comes in and actions go out, then choose a small observation, orient, decision,
+or action spec.
