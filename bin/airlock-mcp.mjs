@@ -3,7 +3,6 @@
 import { spawnSync } from "node:child_process";
 import readline from "node:readline";
 
-const AIRLOCK_SMITH_REPO = "https://github.com/reunionstudio/airlock-smith";
 const PACKAGE_NAME = "@airlock/mcp";
 const DEFAULT_SERVER_NAME = "airlock";
 const PROTOCOL_VERSION = "2025-06-18";
@@ -25,8 +24,8 @@ Options:
   --dry-run             Print the Codex registration command without running it.
   --help                Show this help.
 
-Airlock MCP is the public connector front door.
-Airlock Smith is the guided spec-building mode inside that experience.
+Airlock MCP is the single installed interface for agents working with Airlock.
+Airlock Smith is the spec-building capability inside that experience.
 `);
 }
 
@@ -59,17 +58,14 @@ function codexInstallCommand(serverName) {
   return ["codex", ...codexInstallArgs(serverName)].map(shellQuote).join(" ");
 }
 
-function smithPrompt(project) {
+function airlockPrompt(project) {
   const repoName = specsRepoName(project);
-  return `I want to use Airlock Smith to start building Airlock specs.
+  return `I want to use Airlock MCP to start working with Airlock specs for ${repoName}.
 
-Use this public repo:
-${AIRLOCK_SMITH_REPO}
-
-Set up this project as an Airlock Smith specs repo. Fetch or install Airlock
-Smith from that GitHub repo, run the bootstrap in this project, then welcome me
-and help me decide what spec to build first. Do not create the first workspace
-until I choose a path.`;
+Set up this project as an Airlock specs repo. Use the Airlock Smith
+spec-building capability when we need to draft or revise specs. Welcome me,
+help me think through real Airlock use cases, and ask only for the missing
+decisions. Do not create the first workspace until I choose a path.`;
 }
 
 function nextSteps(project) {
@@ -79,12 +75,15 @@ function nextSteps(project) {
   2. Create a new blank project named ${repoName}.
   3. Ask Codex:
 
-${smithPrompt(project)
+${airlockPrompt(project)
   .split("\n")
   .map((line) => `     ${line}`)
   .join("\n")}
 
-Airlock Smith will offer:
+Airlock MCP will offer:
+  - spec-building with Airlock Smith
+  - guidance for using specs to pull and push governed data
+  - improvement loops based on real Airlock use cases
   - OODA brainstorming for possible specs
   - a blank workspace for a known process
   - a posts feedback loop for shared human/agent feedback`;
@@ -153,24 +152,32 @@ ${nextSteps(project)}
 }
 
 function mcpText(project) {
-  return `# Airlock Smith
+  return `# Airlock MCP
 
-Airlock Smith helps Codex and a person draft Airlock specs over multiple
-sessions before sending a complete config to an installed Airlock app.
+Airlock MCP is the single installed interface for AI agents working with
+Airlock. It helps a person and their agent build specs, pull and push governed data
+through specs, and improve Airlock workflows from real use cases.
+
+Airlock Smith is the spec-building capability inside Airlock MCP. Use it when a
+spec needs to be drafted, checked, revised, imported, cloned, or prepared for
+installed Airlock validation.
 
 Start in a blank project specs repo such as ${specsRepoName(project)}. Do not
-work inside the public airlock-smith tool repo unless you are changing the tool.
+work inside the Airlock MCP or Airlock Smith implementation repos unless you
+are changing the tools themselves.
 
 Use this prompt in the blank specs repo:
 
-${smithPrompt(project)}
+${airlockPrompt(project)}
 
-After bootstrap, choose one path:
+After bootstrap, choose the next useful path:
 
 1. Brainstorm possible specs using the OODA loop.
 2. Start from a known process and create a blank workspace.
 3. Create a posts feedback loop for humans and agents to submit requests,
    observations, and responses.
+4. Use an installed Airlock app to validate specs, load data, read outputs, or
+   plan push/pull workflows through specs.
 
 Create posts only when the user chooses the feedback-loop path.`;
 }
@@ -209,8 +216,8 @@ function handleMcpRequest(message) {
     return makeResponse(id, {
       tools: [
         {
-          name: "airlock_smith_start",
-          description: "Return the Airlock Smith setup prompt and first-session guidance.",
+          name: "airlock_start",
+          description: "Return Airlock MCP setup guidance for building and using Airlock specs.",
           inputSchema: {
             type: "object",
             properties: {
@@ -227,7 +234,7 @@ function handleMcpRequest(message) {
   }
 
   if (method === "tools/call") {
-    if (params?.name !== "airlock_smith_start") {
+    if (params?.name !== "airlock_start") {
       return makeError(id, -32602, `unknown tool: ${params?.name || ""}`);
     }
     const project = params?.arguments?.project || "Home";
@@ -240,9 +247,9 @@ function handleMcpRequest(message) {
     return makeResponse(id, {
       prompts: [
         {
-          name: "airlock-smith-start",
-          title: "Start Airlock Smith",
-          description: "Bootstrap a blank specs repo and choose the first Airlock spec path.",
+          name: "airlock-start",
+          title: "Start Airlock",
+          description: "Bootstrap a blank specs repo and choose the first Airlock path.",
           arguments: [
             {
               name: "project",
@@ -256,16 +263,16 @@ function handleMcpRequest(message) {
   }
 
   if (method === "prompts/get") {
-    if (params?.name !== "airlock-smith-start") {
+    if (params?.name !== "airlock-start") {
       return makeError(id, -32602, `unknown prompt: ${params?.name || ""}`);
     }
     const project = params?.arguments?.project || "Home";
     return makeResponse(id, {
-      description: "Start Airlock Smith in a blank specs repo.",
+      description: "Start building and using Airlock specs in a blank specs repo.",
       messages: [
         {
           role: "user",
-          content: { type: "text", text: smithPrompt(project) },
+          content: { type: "text", text: airlockPrompt(project) },
         },
       ],
     });
@@ -275,9 +282,9 @@ function handleMcpRequest(message) {
     return makeResponse(id, {
       resources: [
         {
-          uri: "airlock://smith/getting-started",
-          name: "Airlock Smith getting started",
-          description: "How to start an Airlock Smith specs repo with Codex.",
+          uri: "airlock://getting-started",
+          name: "Airlock getting started",
+          description: "How to start building and using Airlock specs with Codex.",
           mimeType: "text/markdown",
         },
       ],
@@ -285,7 +292,7 @@ function handleMcpRequest(message) {
   }
 
   if (method === "resources/read") {
-    if (params?.uri !== "airlock://smith/getting-started") {
+    if (params?.uri !== "airlock://getting-started") {
       return makeError(id, -32602, `unknown resource: ${params?.uri || ""}`);
     }
     return makeResponse(id, {

@@ -1,7 +1,7 @@
 {
   "name": "@airlock/mcp",
   "version": "0.1.0",
-  "description": "Installer front door for Airlock MCP and Airlock Smith spec-building workflows.",
+  "description": "Single-install MCP interface for Airlock agents.",
   "type": "module",
   "bin": {
     "airlock-mcp": "./bin/airlock-mcp.mjs"
