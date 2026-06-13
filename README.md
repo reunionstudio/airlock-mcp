@@ -15,6 +15,14 @@ capability inside Airlock MCP.
 
 ## Install
 
+Dogfood directly from GitHub:
+
+```bash
+npx -y github:reunionstudio/airlock-mcp install --package github:reunionstudio/airlock-mcp
+```
+
+After the npm package is published, use:
+
 ```bash
 npx @airlock/mcp install
 ```
@@ -24,6 +32,12 @@ registers a local stdio server with:
 
 ```bash
 codex mcp add airlock -- npx -y @airlock/mcp server
+```
+
+The GitHub dogfood command registers:
+
+```bash
+codex mcp add airlock -- npx -y github:reunionstudio/airlock-mcp server
 ```
 
 The server exposes bootstrap guidance for starting a specs repo and entering
@@ -51,7 +65,19 @@ npm test
 ```
 
 The smoke test verifies install dry-run output and the stdio MCP handshake for
-`initialize`, `tools/list`, `prompts/list`, and `resources/list`.
+`initialize`, `tools/list`, `prompts/list`, `resources/list`, prompt reads,
+tool calls, resource reads, unknown methods, malformed input, and install
+argument validation.
+
+## Repo Layout
+
+- `bin/airlock-mcp.mjs`: executable entry point.
+- `src/cli.mjs`: argument parsing and command dispatch.
+- `src/install.mjs`: Codex MCP registration.
+- `src/mcp.mjs`: JSON-RPC handlers and stdio loop.
+- `src/text.mjs`: prompts and user-facing guidance.
+- `docs/architecture.md`: architecture and runtime boundaries.
+- `SECURITY.md`: security rules for current and future tools.
 
 The intended user flow is:
 

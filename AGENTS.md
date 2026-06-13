@@ -37,4 +37,6 @@ Run:
 
 ```bash
 npm test
+node -c bin/airlock-mcp.mjs
+python3 -m json.tool package.json
 ```
