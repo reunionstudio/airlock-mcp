@@ -1,0 +1,21 @@
+{
+  "name": "@airlock/mcp",
+  "version": "0.1.0",
+  "description": "Installer front door for Airlock MCP and Airlock Smith spec-building workflows.",
+  "type": "module",
+  "bin": {
+    "airlock-mcp": "./bin/airlock-mcp.mjs"
+  },
+  "scripts": {
+    "test": "node test/smoke.mjs"
+  },
+  "files": [
+    "bin",
+    "test",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}
