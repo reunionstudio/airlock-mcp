@@ -303,7 +303,7 @@ def build_parser() -> argparse.ArgumentParser:
     about_parser = subparsers.add_parser("about", help="Show the Airlock MCP mark and command map.")
     about_parser.set_defaults(func=about)
 
-    init_repo_parser = subparsers.add_parser("init-repo", help="Prepare a specs repo for Codex and Airlock MCP.")
+    init_repo_parser = subparsers.add_parser("init-repo", help="Prepare a Git-backed specs repo for Codex and Airlock MCP.")
     init_repo_parser.add_argument("path", nargs="?", default=".", help="Specs repo path. Defaults to current directory.")
     init_repo_parser.add_argument("--force", action="store_true", help="Overwrite AGENTS.md and the repo-scoped skill.")
     init_repo_parser.set_defaults(func=init_repo)

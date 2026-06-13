@@ -12,10 +12,12 @@ npx @reunionstudio/airlock-mcp install
 ```
 
 Airlock MCP is the single installed interface for agents working with Airlock.
-Then the user opens Codex, creates a blank `<project>-specs` repo, and starts
-chatting with Airlock. Airlock MCP should start by asking what process the user
-wants to improve, then help design specs and operating patterns around observe,
-orient, decide, and act.
+Then the user opens Codex, creates or opens a Git-backed `<project>-specs`
+repo, and starts chatting with Airlock. GitHub is the recommended default when
+available. If Codex is creating the repo, it should ask where the directory
+should live before writing files. Airlock MCP should start by asking what
+process the user wants to improve, then help design specs and operating
+patterns around observe, orient, decide, and act.
 
 The install command is not the spec workspace. It is the connector/setup entry
 point. The specs repo is still the durable memory.
@@ -107,8 +109,13 @@ packaging pressure appears.
 The first release should optimize the user journey:
 
 1. install connector
-2. create blank `<project>-specs` Codex project
-3. ask what process the user wants to improve
-4. map where information comes in and actions go out
-5. create the first workspace only after the user chooses a small first spec
-6. keep a plan for later specs that improve the full loop
+2. create or open a Git-backed `<project>-specs` Codex project
+3. ask where the repo directory should live if Codex is creating it
+4. ask what process the user wants to improve
+5. ask for existing artifacts such as CSV, Excel, JSON, API docs, schemas,
+   forms, screenshots, PDFs, exports, or message examples
+6. use `airlock-specs` library patterns as starting points when useful, while
+   preferring current artifacts over library shapes when they conflict
+7. map where information comes in and actions go out
+8. create the first workspace only after the user chooses a small first spec
+9. keep a plan for later specs that improve the full loop

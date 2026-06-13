@@ -2,7 +2,7 @@
 
 ## Start A New Specs Repo
 
-Use this when a person opens a blank Codex project and wants to start working
+Use this when a person opens a new Codex project and wants to start working
 with real Airlock specs. The project repo is where they work. Public users
 should come through the single Airlock MCP install; this repo provides the
 spec-building capability behind that experience.
@@ -10,6 +10,11 @@ spec-building capability behind that experience.
 Ask for the project or organization name first, then lowercase it, replace
 spaces with hyphens, and append `-specs`. For example, `Home` becomes
 `home-specs`. Reserve `airlock-specs` for the canonical reusable spec library.
+Recommend a real Git repo for the specs project. GitHub is the recommended
+default when the user already has GitHub set up, but any normal repository host
+is acceptable. If Codex is creating the repo, ask where the `<slug>-specs`
+directory should live before making files, then offer to initialize git and
+create or push the GitHub repo.
 Airlock itself does not create this repo; Codex can create it locally while
 helping the user start an Airlock specs project.
 Start in Codex, not Snowflake Cortex. Snow CLI or Cortex only matters later when
@@ -20,13 +25,22 @@ The preferred Codex prompt is:
 ```text
 I want to use Airlock MCP to start working with Airlock specs for Home.
 
-Set up this project as an Airlock specs repo. Welcome me by asking what
-process I want to improve. Explain that Airlock works best when we can
-identify the loop around that process: what information comes in, what context
-helps us understand it, what decision needs to be made, and what action happens
-after the decision. Ask for the messy version, then help turn it into a small
-first Airlock spec and a plan for more. Do not create the first workspace until
-I choose a path.
+Set up this project as an Airlock specs repo. If this project is not already a
+Git repo, recommend storing it in version control, preferably GitHub if
+available. If you are creating the repo for me, ask where the `home-specs`
+directory should live before making files.
+
+Welcome me by asking what process I want to improve. Explain that Airlock works
+best when we can identify the loop around that process: what information comes
+in, what context helps us understand it, what decision needs to be made, and
+what action happens after the decision. Ask whether I already have artifacts:
+CSV or Excel files, JSON samples, API docs, schemas, forms, screenshots, PDFs,
+exports, message examples, or other content people already use. When useful,
+check the reusable airlock-specs library for starting points, patterns, and
+ideas, but prefer current API docs, real exports, samples, and other artifacts
+when they conflict with a library shape. Ask for the messy version, then help
+turn it into a small first Airlock spec and a plan for more. Do not create the
+first workspace until I choose a path.
 ```
 
 When dogfooding this implementation repo before the MCP package is published,
@@ -53,9 +67,10 @@ The connector implementation lives in `reunionstudio/airlock-mcp`; this
 workbench keeps the Airlock MCP spec-building capability.
 
 That should install or register the Airlock MCP connector for the user's agent
-environment. After that, the user still creates a blank `<slug>-specs` project
-and starts chatting there. Airlock MCP covers building specs, using specs to
-pull and push governed data, and improving specs from real use cases.
+environment. After that, the user still creates or opens a Git-backed
+`<slug>-specs` project and starts chatting there. Airlock MCP covers building
+specs, using specs to pull and push governed data, and improving specs from real
+use cases.
 
 For Codex, the install command should register the server with:
 
@@ -67,10 +82,12 @@ The MCP-style flow should be:
 
 1. Run `npx @reunionstudio/airlock-mcp install` once for the agent environment.
 2. Open Codex.
-3. Create a new blank project named for the org or project, such as
+3. Create or open a Git-backed specs repo named for the org or project, such as
    `home-specs`.
-4. Tell Codex: `Use Airlock to help me improve a process with specs.`
-5. Airlock MCP welcomes, asks what process the user wants to improve, explains
+4. If Codex is creating it, choose where the repo directory should live before
+   files are written.
+5. Tell Codex: `Use Airlock to help me improve a process with specs.`
+6. Airlock MCP welcomes, asks what process the user wants to improve, explains
    the loop around the process, and proposes a small first spec plus a plan for
    more.
 
@@ -97,6 +114,18 @@ Information may come from apps, files, forms, people, emails, calls, mail,
 websites, APIs, data feeds, or physical events. Actions may go back through
 those same places. After giving examples, call these places interfaces: where
 the process observes from or acts through.
+
+Ask whether the user already has artifacts for the process: CSV or Excel files,
+JSON samples, API docs, schemas, forms, screenshots, PDFs, exports, message
+examples, or other content people already use. Treat these as design artifacts
+for drafting the spec. They are different from Airlock attachments, which are
+evidence files submitted later with governed records.
+
+When useful, point at the reusable `airlock-specs` library for starting points,
+patterns, and ideas. Do not treat those library specs as guaranteed to reflect
+the current shape of third-party systems. If current API docs, exports, samples,
+schemas, or user-provided artifacts disagree with the library, prefer the
+current artifacts and record the divergence.
 
 Ask for the messy version. Help turn it into a small first Airlock spec and a
 plan for more.
@@ -144,6 +173,11 @@ Supported input shapes:
 - a raw canonical object with `core_config` or `column_config`
 - a legacy `{"specs": [{"config": ...}]}`
 
+Spec-library imports are starting points, not live system contracts. Before
+using one for a third-party system, compare it with current API docs, CSV or
+Excel exports, JSON samples, schemas, forms, and other real artifacts. Override
+outdated or mismatched fields when current evidence says the shape has changed.
+
 ## Clone A Workspace
 
 Use this when a related spec should preserve most design choices but needs a new
@@ -187,7 +221,10 @@ airlock-mcp next workspaces/team-posts
 
 The summary shows the current spec identity, required fields, variant fields,
 attachment posture, guest access model, sample record count, note-file status,
-and local check counts.
+and local check counts. It is organized as a structured spec card with sections
+for core, file rules, attachments, guest access, column rules, samples, notes,
+and check status so Codex can present the draft back to the user before asking
+for decisions.
 
 `next` prints the same recap plus a conservative next action: fix local errors,
 review warnings, fill open design prompts in `decisions.md`, add sample records,

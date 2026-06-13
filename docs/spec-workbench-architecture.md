@@ -125,8 +125,9 @@ patterns, bootstrap, workspace files, local checks, and the Codex skill.
 
 That command is the agent connector/setup entry point, not the user's spec
 workspace. After installing or registering the connector, the user still creates
-a separate `<project>-specs` repo and works there with Codex. Users should ask
-for Airlock, not install a separate spec-building tool.
+or opens a separate Git-backed `<project>-specs` repo in a user-chosen location
+and works there with Codex. GitHub is the recommended default when available.
+Users should ask for Airlock, not install a separate spec-building tool.
 
 For Codex, the install command should use the platform MCP manager rather than
 editing config files directly:

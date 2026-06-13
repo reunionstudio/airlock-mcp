@@ -44,7 +44,7 @@ export function handleMcpRequest(message) {
       },
       serverInfo: {
         name: "airlock",
-        version: "0.1.1",
+        version: "0.1.2",
       },
       instructions:
         "Airlock MCP helps agents improve processes with Airlock specs. Use airlock_start for orientation or the airlock_* tools to bootstrap, draft, check, summarize, export, and render specs.",
@@ -84,7 +84,7 @@ export function handleMcpRequest(message) {
         {
           name: "airlock-start",
           title: "Start Airlock",
-          description: "Bootstrap a blank specs repo and choose the first Airlock path.",
+          description: "Bootstrap a Git-backed specs repo and choose the first Airlock path.",
           arguments: [
             {
               name: "project",
@@ -103,7 +103,7 @@ export function handleMcpRequest(message) {
     }
     const project = params?.arguments?.project || "Home";
     return makeResponse(id, {
-      description: "Start building and using Airlock specs in a blank specs repo.",
+      description: "Start building and using Airlock specs in a Git-backed specs repo.",
       messages: [
         {
           role: "user",

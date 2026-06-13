@@ -20,6 +20,12 @@ the deterministic checker.
    organization name and suggest `<slug>-specs`; for example, `Home` becomes
    `home-specs`. Reserve `airlock-specs` for the canonical reusable spec
    library.
+   Recommend storing the specs project in a real version-controlled repo,
+   preferably a GitHub repo when the user already uses GitHub. Before creating
+   the directory, ask where the user wants the `<slug>-specs` repo to live. If
+   Codex can create the repo, offer to initialize git and create/push a GitHub
+   repo; otherwise ask the user to create the repo and open it in Codex before
+   running `airlock-mcp init-repo`.
    Public users should normally arrive through the single Airlock MCP install,
    then ask Airlock to help build and use specs. Treat spec-building as a
    capability inside that experience, not a second install.
@@ -40,6 +46,16 @@ the deterministic checker.
    Give examples before naming the concept: apps, files, forms, people, emails,
    calls, mail, websites, APIs, data feeds, or physical events. Then call these
    places interfaces: where the process observes from or acts through.
+   Ask whether the user already has artifacts for the process, such as CSV or
+   Excel files, JSON samples, API docs, schemas, forms, screenshots, PDFs,
+   exports, message examples, or other content people already use. A small real
+   sample is often better than a long explanation. Remind the user to redact
+   secrets before attaching files or pasting content.
+   When relevant, look to the reusable `airlock-specs` library for starting
+   points, patterns, and ideas. Do not treat those library specs as guaranteed
+   descriptions of any third-party system. Prefer current API docs, real data
+   exports, samples, and user-provided artifacts when they conflict with the
+   library, and record the reason for the divergence.
    Ask for the messy version. Help turn it into a small first Airlock spec and
    a plan for more. Do not create the first workspace until the user chooses a
    path.
@@ -48,6 +64,9 @@ the deterministic checker.
    If the user is unsure, continue process discovery before creating files.
 5. Use `airlock-mcp import-spec <json-file> <name>` when starting from a
    spec-library file, an exported `SPEC_CONFIG`, or an existing canonical config.
+   If the source is from `airlock-specs`, treat it as a reusable draft pattern.
+   Check actual API docs, CSV/Excel/JSON samples, schemas, or other artifacts
+   before assuming the source fields match a live third-party system.
 6. Use `airlock-mcp clone <source-workspace> <name>` when creating a related
    draft from an existing workspace. Treat clone like the old Streamlit UI:
    preserve the shape but deliberately reset spec identity.
@@ -59,6 +78,10 @@ the deterministic checker.
    `airlock-mcp next <workspace>` before editing so
    the current shape, sample count, access model, and local check status are
    visible.
+   Present the summary back to the user as a structured spec card when useful:
+   core, file rules, attachments, guest access, column rules, samples, notes,
+   and check status. Do not make the user infer the current spec from file
+   links alone.
 10. Run `airlock-mcp check <workspace>` after changing draft config or sample
    records.
 11. Keep `sample.records.json` as the agent-friendly authoring shape. Use
@@ -104,6 +127,25 @@ When a user names a process, map the interfaces both ways:
 Spot gaps gently. A user may have one dataset but need additional observations
 to orient well, or may rely on hard-to-automate interfaces such as phone calls
 or physical mail.
+
+## Artifacts And Libraries
+
+Start from artifacts whenever they exist. Useful design artifacts include CSV
+or Excel files, JSON samples, API docs, schemas, forms, screenshots, PDFs,
+exports, message examples, and other defined content that already carries the
+process shape.
+
+Use design artifacts to infer row grain, field names, durable identifiers,
+timestamps, evidence, variants, attachment needs, and edge cases. Distinguish
+design artifacts from Airlock attachments: design artifacts help draft the spec;
+attachments are evidence files later submitted with governed records.
+
+Use `airlock-specs` as a source of reusable starting points, patterns, and
+ideas. Do not promise that Airlock spec-library shapes reflect current
+third-party APIs, exports, or business objects. If a library shape looks
+outdated, overfit, underfit, or contradicted by current artifacts, override it
+with the best current evidence and explain the decision in `decisions.md` or
+`review.md`.
 
 ## OODA Loop
 

@@ -31,7 +31,7 @@ export const WORKBENCH_TOOLS = [
   },
   {
     name: "airlock_init_repo",
-    description: "Bootstrap a specs repo with AGENTS.md, the Airlock MCP skill, and workspaces/.",
+    description: "Bootstrap a Git-backed specs repo with AGENTS.md, the Airlock MCP skill, and workspaces/.",
     inputSchema: objectSchema({
       path: {
         type: "string",

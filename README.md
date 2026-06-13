@@ -52,6 +52,11 @@ The server exposes bootstrap guidance for starting a specs repo, coaching a
 person through process discovery, and entering the bundled spec-building
 workbench when a first spec is ready to draft.
 
+Workspace summaries are structured spec cards. They present the current spec
+core, file rules, attachment policy, guest access, column rules, sample record
+shape, note-file status, and local check status so Codex can reflect the draft
+back to the user before asking for decisions.
+
 This install shape uses Node because `npx` runs npm package binaries. MCP itself
 does not require Node. Once Airlock MCP does real operational work, such as
 validating specs, loading records, handling attachments, reading outputs, and
@@ -84,7 +89,7 @@ The server exposes orientation plus local spec-building tools:
 
 - `airlock_start`: return setup guidance for a project.
 - `airlock_doctor`: verify bundled workbench assets.
-- `airlock_init_repo`: bootstrap a blank specs repo.
+- `airlock_init_repo`: bootstrap a Git-backed specs repo.
 - `airlock_list_patterns` and `airlock_show_pattern`: inspect starter patterns.
 - `airlock_init_workspace`: create a workspace from `blank` or `posts`.
 - `airlock_list_workspaces`: inspect active or archived drafts.
@@ -117,13 +122,27 @@ The intended user flow is:
 
 1. Run `npx @reunionstudio/airlock-mcp install` once for the agent environment.
 2. Open Codex.
-3. Create a blank project repo named for the org or project, such as
-   `home-specs`.
-4. Ask Codex to use Airlock MCP to help improve a process with Airlock specs.
-5. Let Airlock MCP bootstrap the project, ask what process the user wants to
+3. Create or open a Git-backed specs repo named for the org or project, such as
+   `home-specs`. GitHub is the recommended default when available.
+4. If Codex is creating the repo, choose where the `home-specs` directory should
+   live before files are written.
+5. Ask Codex to use Airlock MCP to help improve a process with Airlock specs.
+6. Let Airlock MCP bootstrap the project, ask what process the user wants to
    improve, and propose a small first spec plus a plan for more.
 
 The first workspace should not be created automatically. The spec-building
 workbench should first ask for the messy process, identify where information
 comes in and actions go out, then choose a small observation, orient, decision,
 or action spec.
+
+When the user already has artifacts, Airlock MCP should ask for them early:
+CSV or Excel files, JSON samples, API docs, schemas, forms, screenshots, PDFs,
+exports, message examples, or other defined content people already use. These
+are design artifacts for drafting the spec; later Airlock attachments are
+evidence files submitted with governed records.
+
+Airlock MCP can also consult the reusable `airlock-specs` library for starting
+points, patterns, and ideas. Those library specs are not guaranteed to reflect
+the current shape of any third-party system. Current API docs, real exports,
+samples, schemas, and user-provided artifacts should override library shapes
+when they conflict.

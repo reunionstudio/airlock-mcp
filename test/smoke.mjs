@@ -36,6 +36,8 @@ const install = run(["install", "--project", "Home", "--dry-run"]);
 assert.equal(install.status, 0, install.stderr);
 assert.match(install.stdout, /codex mcp add airlock -- npx -y @reunionstudio\/airlock-mcp server/);
 assert.match(install.stdout, /home-specs/);
+assert.match(install.stdout, /Git-backed specs repo/);
+assert.match(install.stdout, /where the home-specs directory should live/);
 assert.match(install.stdout, /Do not create/);
 assert.match(install.stdout, /Airlock MCP will offer/);
 assert.match(install.stdout, /process discovery before choosing a spec pattern/);
@@ -164,6 +166,11 @@ try {
     params: { name: "airlock_summary", arguments: { cwd: tmpRoot, workspace: "workspaces/feedback-loop" } },
   });
   assert.match(summary.result.content[0].text, /spec: posts \(Posts\)/);
+  assert.match(summary.result.content[0].text, /core:/);
+  assert.match(summary.result.content[0].text, /file_rules:/);
+  assert.match(summary.result.content[0].text, /column_rules:/);
+  assert.match(summary.result.content[0].text, /samples:/);
+  assert.match(summary.result.content[0].text, /first_record_key: post_id=POST-001/);
 
   const csv = handleMcpRequest({
     jsonrpc: "2.0",
@@ -193,7 +200,7 @@ const input = [
     params: {
       protocolVersion: "2025-06-18",
       capabilities: {},
-      clientInfo: { name: "test", version: "0.1.1" },
+      clientInfo: { name: "test", version: "0.1.2" },
     },
   },
   { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
@@ -236,7 +243,7 @@ const responses = server.stdout
 
 assert.equal(responses.length, 9);
 assert.equal(responses[0].result.serverInfo.name, "airlock");
-assert.equal(responses[0].result.serverInfo.version, "0.1.1");
+assert.equal(responses[0].result.serverInfo.version, "0.1.2");
 assert.equal(responses[1].result.tools[0].name, "airlock_start");
 assert.equal(responses[1].result.tools[0].description, "Return Airlock MCP setup guidance for building and using Airlock specs.");
 assert.equal(responses[2].result.prompts[0].name, "airlock-start");
@@ -244,13 +251,22 @@ assert.equal(responses[2].result.prompts[0].title, "Start Airlock");
 assert.equal(responses[3].result.resources[0].uri, "airlock://getting-started");
 assert.equal(responses[3].result.resources[0].name, "Airlock getting started");
 assert.match(responses[4].result.content[0].text, /single installed interface/);
+assert.match(responses[4].result.content[0].text, /Git-backed specs repo/);
+assert.match(responses[4].result.content[0].text, /ask where the directory should live/);
 assert.match(responses[4].result.content[0].text, /What process do you want to improve/);
 assert.match(responses[4].result.content[0].text, /Airlock calls these places interfaces/);
+assert.match(responses[4].result.content[0].text, /If you already have artifacts/);
+assert.match(responses[4].result.content[0].text, /airlock-specs library/);
 assert.doesNotMatch(responses[4].result.content[0].text, /Airlock Star/);
 assert.match(responses[5].result.messages[0].content.text, /Airlock MCP/);
+assert.match(responses[5].result.messages[0].content.text, /Git repo/);
+assert.match(responses[5].result.messages[0].content.text, /where the home-specs/);
 assert.match(responses[5].result.messages[0].content.text, /process I want to improve/);
+assert.match(responses[5].result.messages[0].content.text, /CSV or Excel files/);
+assert.match(responses[5].result.messages[0].content.text, /airlock-specs library/);
 assert.match(responses[6].result.contents[0].text, /Spec design: draft, check, revise/);
 assert.match(responses[6].result.contents[0].text, /Airlock operating patterns/);
+assert.match(responses[6].result.contents[0].text, /If you already have artifacts/);
 assert.doesNotMatch(responses[6].result.contents[0].text, /Airlock Star/);
 assert.equal(responses[7].error.code, -32601);
 assert.equal(responses[8].error.code, -32700);

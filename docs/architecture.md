@@ -45,10 +45,10 @@ The bootstrap server exposes:
   `airlock_list_workspaces`, `airlock_check_workspace`, `airlock_summary`,
   `airlock_next`, `airlock_export_csv`, and `airlock_render_sql`
 
-These give the agent enough context to start a blank `<project>-specs` repo,
-ask what process the user wants to improve, enter the spec-building workbench
-when a first spec is ready to draft, and avoid creating a first workspace until
-the user chooses a path.
+These give the agent enough context to start a Git-backed `<project>-specs`
+repo in a user-chosen location, ask what process the user wants to improve,
+enter the spec-building workbench when a first spec is ready to draft, and
+avoid creating a first workspace until the user chooses a path.
 
 Workbench tools call the bundled Python package with argument arrays and a
 controlled `PYTHONPATH`. They do not expose update commands over MCP. Tool

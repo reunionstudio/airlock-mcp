@@ -29,6 +29,13 @@ Reserve `airlock-specs` for the canonical reusable Airlock spec library. A
 team, customer, domain, or project should use its own scoped repo name such as
 `home-specs`, `acme-finance-specs`, or `customer-onboarding-specs`.
 
+Specs work should live in a real version-controlled repo. Prefer GitHub when
+the user already uses GitHub, but any normal Git host is acceptable. Before
+creating a new `<slug>-specs` directory, ask where it should live. If Codex can
+create the repo, offer to initialize git and create or push the GitHub repo. If
+not, ask the user to create the repo and open it in Codex before bootstrapping
+Airlock MCP files.
+
 Airlock itself does not create this repo. Codex can create it locally while
 helping the user start an Airlock MCP project, then Airlock receives the
 finished spec later. Start in Codex, not Snowflake Cortex. Snow CLI or Cortex
@@ -54,6 +61,18 @@ Information may come from apps, files, forms, people, emails, calls, mail,
 websites, APIs, data feeds, or physical events. Actions may go back through
 those same places. After giving examples, call these places interfaces: where
 the process observes from or acts through.
+
+Ask whether the user already has artifacts for the process: CSV or Excel files,
+JSON samples, API docs, schemas, forms, screenshots, PDFs, exports, message
+examples, or other defined content people already use. A small real sample is
+often better than a long explanation. Remind the user to redact secrets before
+attaching files or pasting content.
+
+Use `airlock-specs` as a reusable library of starting points, patterns, and
+ideas when it is available. Do not assume library specs match the current shape
+of a third-party API, export, or business object. Prefer current API docs, real
+data exports, samples, and user-provided artifacts when they conflict with the
+library, and record the reason for the divergence.
 
 Ask for the messy version. Help turn it into a small first Airlock spec and a
 plan for more. Do not create the first workspace until the user chooses a path.
@@ -91,6 +110,9 @@ Resolve these before final JSON:
 - references and expectations
 - delegation and agent identity
 - interfaces observed from or acted through
+- existing artifacts such as CSV, Excel, JSON, API docs, schemas, exports,
+  forms, screenshots, PDFs, or message examples
+- whether an `airlock-specs` library pattern was used, changed, or rejected
 - likely gaps in observations, orientation, decisions, or actions
 - observe-orient-decide-act loop
 
@@ -168,8 +190,9 @@ def format_bootstrap_result(result: BootstrapResult) -> str:
             "",
             "next:",
             "1. Open this repo in Codex.",
-            "2. Ask: Use Airlock to help me build and use specs.",
-            "3. Start with: What process do you want to improve?",
+            "2. Keep this specs project in git; GitHub is recommended when available.",
+            "3. Ask: Use Airlock to help me build and use specs.",
+            "4. Start with: What process do you want to improve?",
         ]
     )
     return "\n".join(lines)
