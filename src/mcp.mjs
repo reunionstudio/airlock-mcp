@@ -1,8 +1,27 @@
 import readline from "node:readline";
 
 import { PROTOCOL_VERSION, airlockPrompt, gettingStartedText } from "./text.mjs";
+import { WORKBENCH_TOOLS, callWorkbenchTool } from "./workbench.mjs";
 
 const GETTING_STARTED_URI = "airlock://getting-started";
+
+const START_TOOL = {
+  name: "airlock_start",
+  description: "Return Airlock MCP setup guidance for building and using Airlock specs.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      project: {
+        type: "string",
+        description: "Project or organization name, for example Home.",
+        maxLength: 80,
+      },
+    },
+    additionalProperties: false,
+  },
+};
+
+export const AIRLOCK_TOOLS = [START_TOOL, ...WORKBENCH_TOOLS];
 
 export function makeResponse(id, result) {
   return { jsonrpc: "2.0", id, result };
@@ -28,7 +47,7 @@ export function handleMcpRequest(message) {
         version: "0.1.0",
       },
       instructions:
-        "Airlock MCP helps agents build and use Airlock specs. Use airlock_start to begin in a specs repo.",
+        "Airlock MCP helps agents build and use Airlock specs. Use airlock_start for orientation or the airlock_* tools to bootstrap, draft, check, summarize, export, and render specs.",
     });
   }
 
@@ -37,35 +56,26 @@ export function handleMcpRequest(message) {
   }
 
   if (method === "tools/list") {
-    return makeResponse(id, {
-      tools: [
-        {
-          name: "airlock_start",
-          description: "Return Airlock MCP setup guidance for building and using Airlock specs.",
-          inputSchema: {
-            type: "object",
-            properties: {
-              project: {
-                type: "string",
-                description: "Project or organization name, for example Home.",
-                maxLength: 80,
-              },
-            },
-            additionalProperties: false,
-          },
-        },
-      ],
-    });
+    return makeResponse(id, { tools: AIRLOCK_TOOLS });
   }
 
   if (method === "tools/call") {
-    if (params?.name !== "airlock_start") {
-      return makeError(id, -32602, `unknown tool: ${params?.name || ""}`);
+    const name = params?.name || "";
+    if (name === "airlock_start") {
+      const project = params?.arguments?.project || "Home";
+      return makeResponse(id, {
+        content: [{ type: "text", text: gettingStartedText(project) }],
+      });
     }
-    const project = params?.arguments?.project || "Home";
-    return makeResponse(id, {
-      content: [{ type: "text", text: gettingStartedText(project) }],
-    });
+    try {
+      const result = callWorkbenchTool(name, params?.arguments || {});
+      if (result) {
+        return makeResponse(id, result);
+      }
+      return makeError(id, -32602, `unknown tool: ${name}`);
+    } catch (error) {
+      return makeError(id, -32602, error.message);
+    }
   }
 
   if (method === "prompts/list") {

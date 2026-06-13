@@ -4,7 +4,7 @@ Airlock MCP is the single installed interface for agents working with Airlock.
 The public command should stay simple:
 
 ```bash
-npx @airlock/mcp install
+npx @reunionstudio/airlock-mcp install
 ```
 
 Before npm publication, the same shape can run from GitHub:
@@ -26,8 +26,8 @@ heavier operational tools mature.
 - `src/text.mjs`: product language, prompts, repo naming, and guidance text.
 - `test/smoke.mjs`: executable smoke and protocol tests.
 
-The Smith implementation lives in `reunionstudio/airlock-smith`. Airlock Smith
-is the spec-building capability inside Airlock MCP, not a second install.
+The spec-building workbench lives in this repo under `src/airlock_mcp`,
+`patterns`, `workspaces`, `schemas`, and `.agents/skills/airlock-mcp`.
 Airlock Star is the use-and-improve capability inside Airlock MCP: real use
 cases, governed pull/push through specs, output review, and improvement capture.
 It is also not a second install.
@@ -36,13 +36,23 @@ It is also not a second install.
 
 The bootstrap server exposes:
 
-- tool: `airlock_start`
 - prompt: `airlock-start`
 - resource: `airlock://getting-started`
+- orientation tool: `airlock_start`
+- workbench tools: `airlock_doctor`, `airlock_init_repo`,
+  `airlock_list_patterns`, `airlock_show_pattern`, `airlock_init_workspace`,
+  `airlock_list_workspaces`, `airlock_check_workspace`, `airlock_summary`,
+  `airlock_next`, `airlock_export_csv`, and `airlock_render_sql`
 
 These give the agent enough context to start a blank `<project>-specs` repo,
-enter Smith when specs need drafting, enter Star when specs need to be used or
-improved, and avoid creating a first workspace until the user chooses a path.
+enter the spec-building workbench when specs need drafting, enter Star when
+specs need to be used or improved, and avoid creating a first workspace until
+the user chooses a path.
+
+Workbench tools call the bundled Python package with argument arrays and a
+controlled `PYTHONPATH`. They do not expose update commands over MCP. Tool
+errors are returned as MCP tool results with `isError` so stdout remains valid
+JSON-RPC.
 
 ## Stdio Rules
 
@@ -54,7 +64,7 @@ valid MCP messages to stdout. Logs and diagnostics belong on stderr.
 For Codex, install registers:
 
 ```bash
-codex mcp add airlock -- npx -y @airlock/mcp server
+codex mcp add airlock -- npx -y @reunionstudio/airlock-mcp server
 ```
 
 The installer uses argument arrays, not shell strings, for execution. Server

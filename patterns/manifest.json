@@ -1,0 +1,16 @@
+{
+  "patterns": [
+    {
+      "name": "blank",
+      "title": "Blank draft",
+      "summary": "Minimal observation-style draft for a known process.",
+      "directory": "blank"
+    },
+    {
+      "name": "posts",
+      "title": "Posts feedback loop",
+      "summary": "Small governed feedback stream for discovering what to build next.",
+      "directory": "starter-posts"
+    }
+  ]
+}

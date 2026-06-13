@@ -4,20 +4,18 @@ Airlock MCP is the single installed interface for AI agents working with
 Airlock. It should cover building specs, using specs, pulling and pushing
 governed data, and discovering improvements from real use cases.
 
-Airlock Smith is the spec-building capability inside Airlock MCP, not a second
-thing users install.
+Spec building is bundled inside Airlock MCP, not a second thing users install.
 
 ## Product Boundary
 
 - Keep this repo focused on connector installation, MCP server behavior, agent
-  registration, and Airlock-facing tools.
-- Keep spec drafting patterns, workspace files, and deterministic Airlock Smith
-  checks in `reunionstudio/airlock-smith`.
-- The public user command is `npx @airlock/mcp install`.
-- For Codex, install should use `codex mcp add airlock -- npx -y @airlock/mcp server`.
+  registration, Airlock-facing tools, spec drafting patterns, workspace files,
+  and deterministic spec-building checks.
+- The public user command is `npx @reunionstudio/airlock-mcp install`.
+- For Codex, install should use `codex mcp add airlock -- npx -y @reunionstudio/airlock-mcp server`.
 - After install, the user creates a blank `<project>-specs` Codex project and
-  starts chatting there. They should ask for Airlock, not for a separate Smith
-  install.
+  starts chatting there. They should ask for Airlock, not for a separate
+  spec-building install.
 
 ## MCP Runtime
 
@@ -39,4 +37,6 @@ Run:
 npm test
 node -c bin/airlock-mcp.mjs
 python3 -m json.tool package.json
+PYTHONPATH=src python3 -m unittest discover
+PYTHONPATH=src python3 -m airlock_mcp doctor
 ```

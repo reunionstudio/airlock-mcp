@@ -1,0 +1,135 @@
+{
+  "core_config": {
+    "spec_name": "posts",
+    "spec_alias": "Posts",
+    "description": "Governed feedback, requests, observations, and responses from people or agents.",
+    "owner_role": "app_admin",
+    "is_published": false,
+    "is_archived": false
+  },
+  "column_config": [
+    {
+      "name": "post_id",
+      "type": "string",
+      "description": "Stable post identifier supplied by the submitting person or agent.",
+      "tests": ["not_null", "unique"]
+    },
+    {
+      "name": "reply_to_post_id",
+      "type": "string",
+      "description": "Optional parent post id when this post is a response.",
+      "tests": []
+    },
+    {
+      "name": "submitted_by",
+      "type": "string",
+      "description": "Business-facing submitter label or upstream user id.",
+      "tests": ["not_null"]
+    },
+    {
+      "name": "posted_at",
+      "type": "datetime",
+      "description": "Business timestamp when the post was authored or captured.",
+      "format": "%Y-%m-%d %H:%M:%S",
+      "tests": ["not_null"]
+    },
+    {
+      "name": "body",
+      "type": "string",
+      "description": "Plain-language feedback, request, observation, or response.",
+      "tests": ["not_null"]
+    },
+    {
+      "name": "tags",
+      "type": "string",
+      "description": "Optional routing tags such as #request, #bug, #finance, or #spec-gap.",
+      "tests": []
+    },
+    {
+      "name": "related_area",
+      "type": "string",
+      "description": "Optional business area such as finance, operations, support, product, or commerce.",
+      "tests": []
+    },
+    {
+      "name": "related_process",
+      "type": "string",
+      "description": "Optional process this post may lead to, such as reimbursements or budget requests.",
+      "tests": []
+    },
+    {
+      "name": "details",
+      "type": "variant",
+      "description": "Optional structured context for source, request, evidence metadata, or agent notes.",
+      "tests": []
+    }
+  ],
+  "rules": [
+    {
+      "type": "variant_shape",
+      "field": "details",
+      "allowed_root_keys": ["source", "request", "evidence", "agent"],
+      "paths": [
+        {
+          "json_path": "$.source.system",
+          "type": "string",
+          "required": false
+        },
+        {
+          "json_path": "$.request.desired_outcome",
+          "type": "string",
+          "required": false
+        },
+        {
+          "json_path": "$.evidence.url",
+          "type": "string",
+          "required": false
+        },
+        {
+          "json_path": "$.agent.name",
+          "type": "string",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "file_rules": {
+    "file_format": {
+      "file_type": "csv",
+      "record_delimiter": "\n",
+      "field_delimiter": ",",
+      "field_optionally_enclosed_by": "\"",
+      "escape_unenclosed_field": "\\",
+      "encoding": "UTF8",
+      "parse_header": true,
+      "save_header": true
+    }
+  },
+  "attachment_policy": {
+    "attachments_enabled": true,
+    "attachment_required": false
+  },
+  "guest_access": {
+    "isolated_directories_enabled": false,
+    "public_folder": {
+      "enabled": true,
+      "subfolders": {
+        "append_access": {
+          "enabled": true
+        },
+        "read_access": {
+          "enabled": true
+        },
+        "full_access": {
+          "enabled": false
+        }
+      }
+    },
+    "guest_roles": [
+      {
+        "role_name": "agent",
+        "access_level": "append_access"
+      }
+    ]
+  }
+}

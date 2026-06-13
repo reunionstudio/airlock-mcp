@@ -1,0 +1,27 @@
+{
+  "spec_name": "posts",
+  "filename": "post_001",
+  "records": [
+    {
+      "post_id": "POST-001",
+      "reply_to_post_id": "",
+      "submitted_by": "agent.deb",
+      "posted_at": "2026-06-13 09:00:00",
+      "body": "Please make reimbursements easier to prepare and submit.",
+      "tags": "#request #finance #reimbursements",
+      "related_area": "finance",
+      "related_process": "employee reimbursements",
+      "details": {
+        "source": {
+          "system": "codex"
+        },
+        "request": {
+          "desired_outcome": "An approved agent can prepare a draft reimbursement with receipt evidence."
+        },
+        "agent": {
+          "name": "Deb"
+        }
+      }
+    }
+  ]
+}

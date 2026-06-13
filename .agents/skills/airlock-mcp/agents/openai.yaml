@@ -1,0 +1,4 @@
+interface:
+  display_name: "Airlock MCP"
+  short_description: "Draft and review Airlock specs with Codex."
+  default_prompt: "Use $airlock-mcp to help me draft a small Airlock spec, choose a starting pattern, and check the local workspace."

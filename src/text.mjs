@@ -1,4 +1,4 @@
-export const PACKAGE_NAME = "@airlock/mcp";
+export const PACKAGE_NAME = "@reunionstudio/airlock-mcp";
 export const DEFAULT_PACKAGE_SPEC = PACKAGE_NAME;
 export const DEFAULT_SERVER_NAME = "airlock";
 export const PROTOCOL_VERSION = "2025-06-18";
@@ -21,8 +21,8 @@ export function airlockPrompt(project) {
   const repoName = specsRepoName(project);
   return `I want to use Airlock MCP to start working with Airlock specs for ${repoName}.
 
-Set up this project as an Airlock specs repo. Use the Airlock Smith
-spec-building capability when we need to draft or revise specs. Welcome me,
+Set up this project as an Airlock specs repo. Use Airlock MCP
+spec-building when we need to draft or revise specs. Welcome me,
 help me think through real Airlock use cases, and ask only for the missing
 decisions. Do not create the first workspace until I choose a path.`;
 }
@@ -40,7 +40,7 @@ ${airlockPrompt(project)
   .join("\n")}
 
 Airlock MCP will offer:
-  - spec-building with Airlock Smith
+  - spec-building with the bundled workbench
   - spec use and improvement loops with Airlock Star
   - guidance for pulling and pushing governed data through specs
   - OODA brainstorming for possible specs
@@ -55,9 +55,8 @@ Airlock MCP is the single installed interface for AI agents working with
 Airlock. It helps a person and their agent build specs, pull and push governed data
 through specs, and improve Airlock workflows from real use cases.
 
-Airlock Smith is the spec-building capability inside Airlock MCP. Use it when a
-spec needs to be drafted, checked, revised, imported, cloned, or prepared for
-installed Airlock validation.
+The Airlock MCP spec-building workbench drafts, checks, revises, imports,
+clones, and prepares specs for installed Airlock validation.
 
 Airlock Star is the use-and-improve capability inside Airlock MCP. Use it when
 someone wants to pull or push governed data through specs, exercise real
@@ -65,8 +64,8 @@ Airlock workflows, inspect outputs, or turn field experience into spec
 improvements.
 
 Start in a blank project specs repo such as ${specsRepoName(project)}. Do not
-work inside the Airlock MCP or Airlock Smith implementation repos unless you
-are changing the tools themselves.
+work inside the Airlock MCP implementation repo unless you are changing the
+tools themselves.
 
 Use this prompt in the blank specs repo:
 
@@ -88,8 +87,8 @@ export function helpText() {
   return `airlock-mcp
 
 Usage:
-  npx @airlock/mcp install [--project <name>] [--name <server-name>] [--package <spec>] [--dry-run]
-  npx @airlock/mcp server
+  npx @reunionstudio/airlock-mcp install [--project <name>] [--name <server-name>] [--package <spec>] [--dry-run]
+  npx @reunionstudio/airlock-mcp server
 
 Commands:
   install   Register the Airlock MCP server with Codex.
@@ -103,7 +102,7 @@ Options:
   --help                Show this help.
 
 Airlock MCP is the single installed interface for agents working with Airlock.
-Airlock Smith is the spec-building capability inside that experience.
+Spec building is bundled inside that experience.
 Airlock Star is the use-and-improve capability inside that experience.
 `;
 }

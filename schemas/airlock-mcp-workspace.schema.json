@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Airlock MCP Workspace",
+  "type": "object",
+  "required": ["brief", "decisions", "spec_config", "sample_records"],
+  "properties": {
+    "brief": { "type": "string" },
+    "decisions": { "type": "string" },
+    "questions": { "type": "string" },
+    "review": { "type": "string" },
+    "spec_config": { "type": "object" },
+    "sample_records": { "type": "object" }
+  }
+}

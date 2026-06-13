@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
@@ -9,10 +12,18 @@ import {
   validatePackageSpec,
   validateServerName,
 } from "../src/install.mjs";
-import { encodeMessage, handleMcpRequest, makeError } from "../src/mcp.mjs";
+import { AIRLOCK_TOOLS, encodeMessage, handleMcpRequest, makeError } from "../src/mcp.mjs";
 import { specsRepoName } from "../src/text.mjs";
 
 const bin = fileURLToPath(new URL("../bin/airlock-mcp.mjs", import.meta.url));
+const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL("../package.json", import.meta.url)), "utf8"));
+
+assert.equal(packageJson.name, "@reunionstudio/airlock-mcp");
+assert.equal(packageJson.bin["airlock-mcp"], "bin/airlock-mcp.mjs");
+assert.ok(statSync(bin).mode & 0o111, "bin/airlock-mcp.mjs should be executable");
+for (const file of packageJson.files) {
+  assert.ok(existsSync(fileURLToPath(new URL(`../${file}`, import.meta.url))), `package file entry exists: ${file}`);
+}
 
 function run(args, input) {
   return spawnSync(process.execPath, [bin, ...args], {
@@ -23,7 +34,7 @@ function run(args, input) {
 
 const install = run(["install", "--project", "Home", "--dry-run"]);
 assert.equal(install.status, 0, install.stderr);
-assert.match(install.stdout, /codex mcp add airlock -- npx -y @airlock\/mcp server/);
+assert.match(install.stdout, /codex mcp add airlock -- npx -y @reunionstudio\/airlock-mcp server/);
 assert.match(install.stdout, /home-specs/);
 assert.match(install.stdout, /Do not create/);
 assert.match(install.stdout, /Airlock MCP will offer/);
@@ -32,8 +43,8 @@ assert.match(install.stdout, /Airlock Star/);
 
 assert.equal(specsRepoName("Home"), "home-specs");
 assert.equal(specsRepoName("home-specs"), "home-specs");
-assert.deepEqual(codexInstallArgs("airlock"), ["mcp", "add", "airlock", "--", "npx", "-y", "@airlock/mcp", "server"]);
-assert.equal(codexInstallCommand("airlock"), "codex mcp add airlock -- npx -y @airlock/mcp server");
+assert.deepEqual(codexInstallArgs("airlock"), ["mcp", "add", "airlock", "--", "npx", "-y", "@reunionstudio/airlock-mcp", "server"]);
+assert.equal(codexInstallCommand("airlock"), "codex mcp add airlock -- npx -y @reunionstudio/airlock-mcp server");
 assert.deepEqual(codexInstallArgs("airlock", "github:reunionstudio/airlock-mcp"), [
   "mcp",
   "add",
@@ -77,6 +88,101 @@ assert.equal(
   }).error.code,
   -32602,
 );
+
+const toolNames = AIRLOCK_TOOLS.map((tool) => tool.name);
+assert.equal(toolNames[0], "airlock_start");
+assert.ok(toolNames.includes("airlock_init_repo"));
+assert.ok(toolNames.includes("airlock_init_workspace"));
+assert.ok(toolNames.includes("airlock_check_workspace"));
+assert.ok(toolNames.includes("airlock_export_csv"));
+assert.ok(toolNames.includes("airlock_render_sql"));
+assert.equal(AIRLOCK_TOOLS.find((tool) => tool.name === "airlock_init_workspace").inputSchema.required[0], "name");
+
+const patterns = handleMcpRequest({
+  jsonrpc: "2.0",
+  id: 101,
+  method: "tools/call",
+  params: { name: "airlock_list_patterns", arguments: {} },
+});
+assert.equal(patterns.result.isError, undefined);
+assert.match(patterns.result.content[0].text, /blank/);
+assert.match(patterns.result.content[0].text, /posts/);
+
+const invalidToolArgs = handleMcpRequest({
+  jsonrpc: "2.0",
+  id: 102,
+  method: "tools/call",
+  params: { name: "airlock_check_workspace", arguments: {} },
+});
+assert.equal(invalidToolArgs.error.code, -32602);
+assert.match(invalidToolArgs.error.message, /workspace is required/);
+
+const tmpRoot = mkdtempSync(join(tmpdir(), "airlock-mcp-smoke-"));
+try {
+  const initRepo = handleMcpRequest({
+    jsonrpc: "2.0",
+    id: 103,
+    method: "tools/call",
+    params: { name: "airlock_init_repo", arguments: { cwd: tmpRoot, path: ".", force: true } },
+  });
+  assert.equal(initRepo.result.isError, undefined);
+  assert.match(initRepo.result.content[0].text, /created AGENTS.md/);
+  assert.ok(existsSync(join(tmpRoot, "AGENTS.md")));
+  assert.ok(existsSync(join(tmpRoot, ".agents", "skills", "airlock-mcp", "SKILL.md")));
+
+  const initWorkspace = handleMcpRequest({
+    jsonrpc: "2.0",
+    id: 104,
+    method: "tools/call",
+    params: { name: "airlock_init_workspace", arguments: { cwd: tmpRoot, name: "feedback-loop", pattern: "posts" } },
+  });
+  assert.equal(initWorkspace.result.isError, undefined);
+  assert.match(initWorkspace.result.content[0].text, /feedback-loop/);
+
+  const listWorkspaces = handleMcpRequest({
+    jsonrpc: "2.0",
+    id: 105,
+    method: "tools/call",
+    params: { name: "airlock_list_workspaces", arguments: { cwd: tmpRoot } },
+  });
+  assert.match(listWorkspaces.result.content[0].text, /feedback-loop/);
+
+  const checkWorkspace = handleMcpRequest({
+    jsonrpc: "2.0",
+    id: 106,
+    method: "tools/call",
+    params: { name: "airlock_check_workspace", arguments: { cwd: tmpRoot, workspace: "workspaces/feedback-loop" } },
+  });
+  assert.equal(checkWorkspace.result.isError, undefined);
+  assert.match(checkWorkspace.result.content[0].text, /^ok$/m);
+
+  const summary = handleMcpRequest({
+    jsonrpc: "2.0",
+    id: 107,
+    method: "tools/call",
+    params: { name: "airlock_summary", arguments: { cwd: tmpRoot, workspace: "workspaces/feedback-loop" } },
+  });
+  assert.match(summary.result.content[0].text, /spec: posts \(Posts\)/);
+
+  const csv = handleMcpRequest({
+    jsonrpc: "2.0",
+    id: 108,
+    method: "tools/call",
+    params: { name: "airlock_export_csv", arguments: { cwd: tmpRoot, workspace: "workspaces/feedback-loop" } },
+  });
+  assert.match(csv.result.content[0].text, /post_id,reply_to_post_id/);
+
+  const sql = handleMcpRequest({
+    jsonrpc: "2.0",
+    id: 109,
+    method: "tools/call",
+    params: { name: "airlock_render_sql", arguments: { cwd: tmpRoot, workspace: "workspaces/feedback-loop" } },
+  });
+  assert.match(sql.result.content[0].text, /CALL airlock\.admin\.create_spec/);
+  assert.match(sql.result.content[0].text, /TRUE\);/);
+} finally {
+  rmSync(tmpRoot, { recursive: true, force: true });
+}
 
 const input = [
   {
@@ -139,7 +245,7 @@ assert.match(responses[4].result.content[0].text, /single installed interface/);
 assert.match(responses[4].result.content[0].text, /pull and push governed data/);
 assert.match(responses[4].result.content[0].text, /Airlock Star is the use-and-improve capability/);
 assert.match(responses[5].result.messages[0].content.text, /Airlock MCP/);
-assert.match(responses[6].result.contents[0].text, /Airlock Smith is the spec-building capability/);
+assert.match(responses[6].result.contents[0].text, /spec-building workbench drafts/);
 assert.match(responses[6].result.contents[0].text, /Airlock Star is the use-and-improve capability/);
 assert.equal(responses[7].error.code, -32601);
 assert.equal(responses[8].error.code, -32700);

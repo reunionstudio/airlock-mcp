@@ -1,0 +1,19 @@
+{
+  "spec_name": "draft_spec",
+  "filename": "draft_001",
+  "records": [
+    {
+      "record_id": "REC-001",
+      "observed_at": "2026-06-13 09:00:00",
+      "summary": "Example draft record.",
+      "details": {
+        "source": {
+          "system": "manual"
+        },
+        "notes": {
+          "reason": "Used to test the draft shape."
+        }
+      }
+    }
+  ]
+}

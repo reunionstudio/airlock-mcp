@@ -1,0 +1,72 @@
+{
+  "core_config": {
+    "spec_name": "draft_spec",
+    "spec_alias": "Draft Spec",
+    "description": "Draft Airlock spec.",
+    "owner_role": "app_admin",
+    "is_published": false,
+    "is_archived": false
+  },
+  "column_config": [
+    {
+      "name": "record_id",
+      "type": "string",
+      "description": "Stable record identifier.",
+      "tests": ["not_null", "unique"]
+    },
+    {
+      "name": "observed_at",
+      "type": "datetime",
+      "description": "Business timestamp for the observed event.",
+      "format": "%Y-%m-%d %H:%M:%S",
+      "tests": ["not_null"]
+    },
+    {
+      "name": "summary",
+      "type": "string",
+      "description": "Short business-readable summary.",
+      "tests": ["not_null"]
+    },
+    {
+      "name": "details",
+      "type": "variant",
+      "description": "Optional validated context.",
+      "tests": []
+    }
+  ],
+  "rules": [
+    {
+      "type": "variant_shape",
+      "field": "details",
+      "allowed_root_keys": ["source", "notes"],
+      "paths": [
+        {
+          "json_path": "$.source.system",
+          "type": "string",
+          "required": false
+        },
+        {
+          "json_path": "$.notes.reason",
+          "type": "string",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "file_rules": {
+    "file_format": {
+      "file_type": "csv",
+      "record_delimiter": "\n",
+      "field_delimiter": ",",
+      "field_optionally_enclosed_by": "\"",
+      "escape_unenclosed_field": "\\",
+      "encoding": "UTF8",
+      "parse_header": true,
+      "save_header": true
+    }
+  },
+  "attachment_policy": {
+    "attachments_enabled": true,
+    "attachment_required": false
+  }
+}
