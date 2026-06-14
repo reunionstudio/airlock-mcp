@@ -1,4 +1,4 @@
 interface:
   display_name: "Airlock MCP"
-  short_description: "Improve a process with Airlock specs and OODA loop planning."
-  default_prompt: "Use $airlock-mcp to ask what process I want to improve, gather any existing artifacts, identify the loop around it, draft a small first Airlock spec, and keep a plan for more specs."
+  short_description: "Design specs or build apps that use Airlock specs."
+  default_prompt: "Use $airlock-mcp to ask whether I want to design specs, improve an OODA loop, or build an app/workflow that uses existing specs; then gather artifacts or available specs and help me move safely."

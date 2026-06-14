@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 from . import __version__
+from .app_context import APP_CONTEXT_MODES, format_app_context_result, init_app_context
 from .art import about_text
 from .bootstrap import bootstrap_repo, format_bootstrap_result
 from .jsonio import read_json
@@ -61,6 +62,17 @@ def about(_: argparse.Namespace) -> int:
 def init_repo(args: argparse.Namespace) -> int:
     result = bootstrap_repo(Path(args.path), force=args.force)
     print(format_bootstrap_result(result))
+    return 0
+
+
+def init_app(args: argparse.Namespace) -> int:
+    result = init_app_context(
+        Path(args.path),
+        mode=args.mode,
+        spec_sources=[Path(source) for source in args.spec],
+        force=args.force,
+    )
+    print(format_app_context_result(result))
     return 0
 
 
@@ -307,6 +319,26 @@ def build_parser() -> argparse.ArgumentParser:
     init_repo_parser.add_argument("path", nargs="?", default=".", help="Specs repo path. Defaults to current directory.")
     init_repo_parser.add_argument("--force", action="store_true", help="Overwrite AGENTS.md and the repo-scoped skill.")
     init_repo_parser.set_defaults(func=init_repo)
+
+    init_app_parser = subparsers.add_parser(
+        "init-app-context",
+        help="Prepare an app repo airlock/ context with spec snapshots and a manifest.",
+    )
+    init_app_parser.add_argument("path", nargs="?", default=".", help="App repo path. Defaults to current directory.")
+    init_app_parser.add_argument(
+        "--mode",
+        choices=APP_CONTEXT_MODES,
+        default="app-first",
+        help="Development mode. Defaults to app-first.",
+    )
+    init_app_parser.add_argument(
+        "--spec",
+        action="append",
+        default=[],
+        help="Spec workspace directory or spec JSON file to snapshot. Repeat for multiple specs.",
+    )
+    init_app_parser.add_argument("--force", action="store_true", help="Overwrite app context files.")
+    init_app_parser.set_defaults(func=init_app)
 
     init_parser = subparsers.add_parser("init", help="Create a spec workspace.")
     init_parser.add_argument("name", help="Workspace folder name.")

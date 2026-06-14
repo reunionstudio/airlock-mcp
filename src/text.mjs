@@ -25,19 +25,23 @@ Set up this project as an Airlock specs repo. If this project is not already a
 Git repo, recommend storing it in version control, preferably GitHub if that is
 available. If you are creating the repo for me, ask where the ${repoName}
 directory should live before making it, then offer to initialize git and create
-or push a GitHub repo.
+or push a GitHub repo. If I am in an app repo and want to build software that
+uses existing specs, or develop the app and specs together, do not bootstrap a
+specs repo unless I ask for spec edits.
 
-Welcome me by asking what process I want to improve. Explain that Airlock works
+Welcome me by asking whether I want spec-first, app-first, or co-development:
+spec-first designs governed specs before the app, app-first builds from existing
+specs, and co-development evolves the app and specs together. For spec-first or
+co-development, ask what process I want to improve. Explain that Airlock works
 best when we can identify the loop around that process: what information comes
 in, what context helps us understand it, what decision needs to be made, and
 what action happens after the decision. Information may come from apps, files,
-forms, people,
-emails, calls, mail, websites, APIs, data feeds, or physical events. Actions
-may go back through those same places. Ask whether I already have artifacts:
-CSV or Excel files, JSON samples, API docs, schemas, forms, screenshots, PDFs,
-exports, message examples, or other content people already use. Treat a small
-real sample as stronger evidence than a long explanation, and remind me to
-redact secrets.
+forms, people, emails, calls, mail, websites, APIs, data feeds, or physical
+events. Actions may go back through those same places. Ask whether I already
+have artifacts: CSV or Excel files, JSON samples, API docs, schemas, forms,
+screenshots, PDFs, exports, message examples, or other content people already
+use. Treat a small real sample as stronger evidence than a long explanation,
+and remind me to redact secrets.
 
 When useful, check the reusable airlock-specs library for starting points,
 patterns, and ideas, but do not assume those library specs match current
@@ -45,7 +49,15 @@ third-party systems. Prefer current API docs, real exports, samples, and other
 artifacts when they conflict with a library shape.
 
 Ask for the messy version, then help turn it into a small first Airlock spec
-and a plan for more. Do not create the first workspace until I choose a path.`;
+and a plan for more. Do not create the first workspace until I choose a path.
+
+If I want app-first or co-development, ask for the app goal, the specs I can
+access, which specs are read sources, which spec records decisions or actions,
+and where the app should run. Offer to run \`airlock-mcp init-app-context\` in
+the app repo to seed \`airlock/specs.manifest.json\`, spec snapshots, sample
+records, and generated helper folders. Help code the app using approved
+Airlock/Snowflake access paths. Do not write directly to Airlock-owned tables
+or bypass spec workflow.`;
 }
 
 export function nextSteps(project) {
@@ -63,8 +75,11 @@ ${airlockPrompt(project)
 
 Airlock MCP will offer:
   - process discovery before choosing a spec pattern
+  - spec-first, app-first, and co-development planning
   - spec design with the bundled workbench
   - Airlock operating patterns for OODA loops and separation of duties
+  - app context seeding with spec snapshots and manifests
+  - app and workflow coding against existing Airlock specs
   - observe specs for controlled interface ingestion
   - orient specs for proposals, context, scoring, or exception queues
   - decision specs and action specs for governed follow-through
@@ -77,16 +92,19 @@ export function gettingStartedText(project) {
 
 Airlock MCP is the single installed interface for AI agents working with
 Airlock. It helps a person and their agent improve processes by designing
-specs, using specs for governed data movement, and planning OODA loops that
-can be assisted by people or agents.
+specs, using specs for governed data movement, planning OODA loops, and building
+apps or workflows that read from and submit through existing specs.
 
-Airlock MCP gives agents two kinds of Airlock expertise:
+Airlock MCP gives agents three kinds of Airlock help:
 
 1. Spec design: draft, check, revise, import, clone, and prepare specs for
    installed Airlock validation.
 2. Airlock operating patterns: use specs to organize observations, orientation,
    governed decisions, controlled actions, separation of duties, and feedback
    loops.
+3. App and workflow implementation: build dashboards, queues, decision UIs,
+   analyses, and agent workflows that use existing specs without bypassing
+   Airlock contracts.
 
 Start in a Git-backed specs repo such as ${specsRepoName(project)}. GitHub is
 the recommended default when the user has it set up, but any normal repository
@@ -98,7 +116,13 @@ Use this prompt in the specs repo:
 
 ${airlockPrompt(project)}
 
-First ask: What process do you want to improve?
+First ask which delivery mode the user wants:
+
+1. Spec-first: design governed specs before building the app surface.
+2. App-first: build an app or workflow from existing specs.
+3. Co-development: develop the app and specs together.
+
+For spec-first and co-development work, ask: What process do you want to improve?
 
 Airlock works best when we can identify the loop around a process:
 
@@ -123,7 +147,15 @@ current shape of any third-party system. Prefer current API docs, real exports,
 samples, and other artifacts when they conflict with the library.
 
 Give Codex the messy version of the process. Airlock MCP should help turn it
-into a small first Airlock spec and a plan for more.`;
+into a small first Airlock spec and a plan for more.
+
+For app-first and co-development work, give Codex the app goal and available
+specs. Airlock MCP should identify read specs, write specs, orienting views,
+decision capture, and safe Airlock/Snowflake access paths. It can seed an app
+repo with \`airlock/specs.manifest.json\`, spec snapshots, sample records, and
+generated helper folders. The app should submit decisions, approvals, actions,
+comments, or follow-ups through Airlock spec contracts, not direct table writes.
+In co-development mode, keep the spec track and app track visible side by side.`;
 }
 
 export function helpText() {
@@ -148,5 +180,7 @@ Airlock MCP is the single installed interface for agents working with Airlock.
 Spec building is bundled inside that experience.
 Airlock operating patterns help connect specs into OODA loops, separation of
 duties, governed decisions, controlled actions, and feedback loops.
+Airlock MCP can also help build apps and workflows that use existing specs for
+approved reads and governed submissions.
 `;
 }

@@ -1,13 +1,16 @@
 ---
 name: airlock-mcp
-description: Design, draft, review, and iterate Airlock specs in the Airlock MCP spec-building workbench. Use when Codex is helping a person choose a small starting spec, work through row grain and OODA-loop decisions, import reusable patterns such as posts or guest access setups, validate local draft files, or prepare an Airlock spec config before installed Airlock validation.
+description: Design, draft, review, and iterate Airlock specs in the Airlock MCP spec-building workbench, or help build apps and workflows that use existing Airlock specs safely. Use when Codex is helping a person choose a small starting spec, work through row grain and OODA-loop decisions, import reusable patterns such as posts or guest access setups, validate local draft files, prepare an Airlock spec config before installed Airlock validation, or code an app that reads from and submits through existing specs.
 ---
 
-# Airlock MCP Spec Builder
+# Airlock MCP
 
 Use this skill to help a human develop Airlock specs over multiple sessions.
-The repo is the workbench; Codex is the conversational interface; the CLI is
-the deterministic checker.
+Also use it when a human wants to build an app or workflow that uses existing
+Airlock specs. The specs repo is the durable workbench for spec drafts; an app
+repo is the right place for code that reads, orients, decides, and submits
+through existing specs. Codex is the conversational interface; the CLI is the
+deterministic checker for local spec drafts.
 
 ## Default Path
 
@@ -16,6 +19,13 @@ the deterministic checker.
    `sample.records.json`, and `review.md`.
 2. If the current repo is not yet an Airlock MCP specs repo, run or suggest:
    `airlock-mcp init-repo`.
+   Exception: if the user asks to build an app, dashboard, approval queue,
+   decision UI, agent workflow, or other code that uses existing specs, do not
+   bootstrap a specs repo just because the current repo lacks `workspaces/`.
+   Treat the current repo as an app repo unless the user asks to create specs.
+   Ask for the development mode, available specs, app goal, and read/write
+   contract instead. Use `airlock-mcp init-app-context` when the app repo needs
+   an `airlock/` folder with spec snapshots and an app manifest.
    When helping create that repo from scratch, ask for the project or
    organization name and suggest `<slug>-specs`; for example, `Home` becomes
    `home-specs`. Reserve `airlock-specs` for the canonical reusable spec
@@ -35,7 +45,9 @@ the deterministic checker.
    any workspace.
    If the user opened the public `airlock-mcp` workbench repo as the entry
    point, help them create a separate `<slug>-specs` project repo beside it.
-3. If no workspace exists, welcome the user and ask:
+3. If no workspace exists, welcome the user and ask which mode they want:
+   spec-first, app-first from existing specs, or co-development.
+   For spec-first or co-development, ask:
    `What process do you want to improve?`
    Explain that Airlock works best when we can identify the loop around that
    process:
@@ -158,6 +170,84 @@ Use the observe-orient-decide-act loop as the product frame:
   rationale, evidence, approval, and separation of duties.
 - Act: controlled writes back to interfaces, commitments, follow-ups, outputs,
   and the next observations created by those actions.
+
+## Apps And Workflows Using Existing Specs
+
+Use this path when the user wants to vibe-code an app, dashboard, queue,
+decision UI, analysis workflow, or agent workflow that uses specs they already
+have access to. This is not spec editing by default.
+
+Use three delivery modes:
+
+- Spec-first: design governed specs, samples, access, and validation before
+  building the app surface.
+- App-first: use existing specs to build an app, dashboard, queue, or workflow.
+- Co-development: develop the app and specs together, keeping the contract and
+  experience visible side by side.
+
+Start by identifying:
+
+1. The app goal: what the user needs to orient around or decide.
+2. Read specs: existing specs the app reads from, such as budgets, expenses,
+   requests, forecasts, observations, payouts, or reference data.
+3. Write specs: existing specs the app submits to, such as decisions,
+   approvals, comments, commitments, actions, or follow-ups.
+4. The app surface: Streamlit, web app, CLI, notebook, scheduled agent, or
+   other runtime.
+5. The Airlock access path: installed Airlock procedures, approved MCP tools,
+   generated read surfaces, stages, or documented SQL helpers available in the
+   user's environment.
+6. Identity, evidence, timestamps, approval, and separation-of-duties rules.
+
+Help the app follow the loop:
+
+- Observe/read: fetch existing governed data through approved Airlock or
+  Snowflake surfaces.
+- Orient: summarize, compare, rank, flag exceptions, propose options, or build
+  dashboards and queues.
+- Decide: capture human or agent choices with rationale and evidence.
+- Act/write: submit the decision, approval, action, or follow-up through an
+  Airlock spec contract.
+
+Keep the boundary clear:
+
+- Do not edit specs unless the user asks for spec changes.
+- Do not write directly to Airlock-owned tables, stages, generated views, or
+  generated tables.
+- Do not treat Snowflake as an unrestricted database just because the app can
+  connect to it.
+- Prefer existing Airlock contracts for reads and writes. If no suitable write
+  spec exists, explain the gap and propose a small decision/action spec as a
+  separate spec-design step.
+- Keep secrets and credentials out of repo files. Use the app's existing secret
+  management pattern.
+
+### App Context Seeding
+
+Use `airlock-mcp init-app-context` in an app repo when the app needs local
+Airlock context. The command creates:
+
+```text
+airlock/
+  AGENTS.md
+  README.md
+  specs.manifest.json
+  spec-snapshots/
+  sample-records/
+  generated/
+    types/
+    sql/
+```
+
+The manifest and snapshots help the app develop against stable local references.
+They are not canonical. Canonical specs live in the specs repo or installed
+Airlock. When seeding from draft workspaces, pass `--spec <workspace>` for each
+spec to copy `spec.config.json` and `sample.records.json` into the app context.
+
+In co-development mode, keep two tracks visible:
+
+- Spec track: row grain, columns, samples, access, validation, workflow.
+- App track: screens, reads, decisions, writes, user actions, runtime.
 
 ## Pattern Guidance
 

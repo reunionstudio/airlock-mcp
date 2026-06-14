@@ -8,18 +8,22 @@ It covers the full Airlock loop:
 - design specs with the bundled spec-building workbench
 - map the process a person wants to improve into observe, orient, decide, and act
 - use specs for governed data movement, decisions, actions, and feedback loops
+- build apps and workflows that read from and submit through existing specs
 - validate, create, and revise specs against installed Airlock
 
-Spec building is not a second thing users install. It is bundled inside
-Airlock MCP.
+Spec building and spec-using app guidance are not second things users install.
+They are bundled inside Airlock MCP.
 
-Airlock MCP gives agents two kinds of Airlock expertise:
+Airlock MCP gives agents three kinds of Airlock help:
 
 1. Spec design: draft, check, revise, import, clone, and prepare specs for
    installed Airlock validation.
 2. Airlock operating patterns: use specs to organize observations, orientation,
    governed decisions, controlled actions, separation of duties, and feedback
    loops.
+3. App and workflow implementation: build dashboards, queues, decision UIs,
+   analyses, and agent workflows that use existing specs through Airlock
+   contracts.
 
 ## Install
 
@@ -50,7 +54,8 @@ codex mcp add airlock -- npx -y github:reunionstudio/airlock-mcp server
 
 The server exposes bootstrap guidance for starting a specs repo, coaching a
 person through process discovery, and entering the bundled spec-building
-workbench when a first spec is ready to draft.
+workbench when a first spec is ready to draft. It also guides agents building
+apps or workflows that use specs the user already has access to.
 
 Workspace summaries are structured spec cards. They present the current spec
 core, file rules, attachment policy, guest access, column rules, sample record
@@ -90,6 +95,8 @@ The server exposes orientation plus local spec-building tools:
 - `airlock_start`: return setup guidance for a project.
 - `airlock_doctor`: verify bundled workbench assets.
 - `airlock_init_repo`: bootstrap a Git-backed specs repo.
+- `airlock_init_app_context`: seed an app repo with spec snapshots, sample
+  records, generated helper folders, and an app manifest.
 - `airlock_list_patterns` and `airlock_show_pattern`: inspect starter patterns.
 - `airlock_init_workspace`: create a workspace from `blank` or `posts`.
 - `airlock_list_workspaces`: inspect active or archived drafts.
@@ -127,13 +134,48 @@ The intended user flow is:
 4. If Codex is creating the repo, choose where the `home-specs` directory should
    live before files are written.
 5. Ask Codex to use Airlock MCP to help improve a process with Airlock specs.
-6. Let Airlock MCP bootstrap the project, ask what process the user wants to
-   improve, and propose a small first spec plus a plan for more.
+6. Choose a delivery mode: spec-first, app-first from existing specs, or
+   co-development of specs and app together.
+7. Let Airlock MCP bootstrap the project, ask what process the user wants to
+   improve when specs are involved, and propose a small first spec plus a plan
+   for more.
 
-The first workspace should not be created automatically. The spec-building
-workbench should first ask for the messy process, identify where information
-comes in and actions go out, then choose a small observation, orient, decision,
-or action spec.
+The first workspace should not be created automatically. Airlock MCP should
+first ask whether the user wants spec-first, app-first from existing specs, or
+co-development of specs and app together. For spec-building work, it should ask
+for the messy process, identify where information comes in and actions go out,
+then choose a small observation, orient, decision, or action spec.
+
+For app-building work, Airlock MCP should identify the app goal, read specs,
+write specs, orienting views, decision capture, and approved Airlock/Snowflake
+access paths. The app should submit decisions, approvals, actions, comments, or
+follow-ups through Airlock spec contracts. It should not write directly to
+Airlock-owned tables or bypass spec workflow.
+
+When an app repo needs local Airlock context, use:
+
+```bash
+airlock-mcp init-app-context . --mode app-first --spec ../home-specs/workspaces/expenses
+```
+
+That creates:
+
+```text
+airlock/
+  AGENTS.md
+  README.md
+  specs.manifest.json
+  spec-snapshots/
+  sample-records/
+  generated/
+    types/
+    sql/
+```
+
+The snapshots are for coding, tests, and UI planning. They are not canonical.
+Canonical specs live in the specs repo or installed Airlock. In
+co-development, keep a visible spec track and app track so changes to row
+grain, access, workflow, screens, reads, and governed writes stay aligned.
 
 When the user already has artifacts, Airlock MCP should ask for them early:
 CSV or Excel files, JSON samples, API docs, schemas, forms, screenshots, PDFs,

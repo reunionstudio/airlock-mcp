@@ -16,8 +16,10 @@ Then the user opens Codex, creates or opens a Git-backed `<project>-specs`
 repo, and starts chatting with Airlock. GitHub is the recommended default when
 available. If Codex is creating the repo, it should ask where the directory
 should live before writing files. Airlock MCP should start by asking what
-process the user wants to improve, then help design specs and operating
-patterns around observe, orient, decide, and act.
+delivery mode the user wants: spec-first, app-first from existing specs, or
+co-development of specs and app together. Then it should help design specs and
+operating patterns around observe, orient, decide, and act, or help code an app
+that reads and submits through Airlock contracts.
 
 The install command is not the spec workspace. It is the connector/setup entry
 point. The specs repo is still the durable memory.
@@ -119,3 +121,31 @@ The first release should optimize the user journey:
 7. map where information comes in and actions go out
 8. create the first workspace only after the user chooses a small first spec
 9. keep a plan for later specs that improve the full loop
+
+For users who already have specs and want to build software, optimize a second
+journey:
+
+1. install connector
+2. open the app repo in Codex
+3. ask for the app goal and available specs
+4. identify read specs and write specs
+5. seed app-local Airlock context with `airlock-mcp init-app-context` when the
+   app needs spec snapshots, samples, generated helpers, and a manifest
+6. build orienting views, dashboards, queues, proposals, or recommendations
+7. capture decisions, approvals, actions, comments, or follow-ups through
+   Airlock spec contracts
+8. avoid direct writes to Airlock-owned tables and avoid bypassing spec workflow
+
+For users who are developing the app and specs together, optimize a third
+journey:
+
+1. open the app repo or specs repo in Codex
+2. choose co-development explicitly
+3. keep a spec track for row grain, columns, access, samples, validation, and
+   workflow
+4. keep an app track for screens, reads, orienting summaries, decision capture,
+   governed writes, runtime, and tests
+5. seed the app repo with `airlock/` snapshots and a manifest when the app needs
+   local contract context
+6. treat app snapshots as development references while canonical specs remain
+   in the specs repo or installed Airlock

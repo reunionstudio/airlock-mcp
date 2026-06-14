@@ -42,6 +42,7 @@ assert.match(install.stdout, /Do not create/);
 assert.match(install.stdout, /Airlock MCP will offer/);
 assert.match(install.stdout, /process discovery before choosing a spec pattern/);
 assert.match(install.stdout, /Airlock operating patterns/);
+assert.match(install.stdout, /app and workflow coding against existing Airlock specs/);
 assert.doesNotMatch(install.stdout, /Airlock Star/);
 
 assert.equal(specsRepoName("Home"), "home-specs");
@@ -95,6 +96,7 @@ assert.equal(
 const toolNames = AIRLOCK_TOOLS.map((tool) => tool.name);
 assert.equal(toolNames[0], "airlock_start");
 assert.ok(toolNames.includes("airlock_init_repo"));
+assert.ok(toolNames.includes("airlock_init_app_context"));
 assert.ok(toolNames.includes("airlock_init_workspace"));
 assert.ok(toolNames.includes("airlock_check_workspace"));
 assert.ok(toolNames.includes("airlock_export_csv"));
@@ -188,6 +190,31 @@ try {
   });
   assert.match(sql.result.content[0].text, /CALL airlock\.admin\.create_spec/);
   assert.match(sql.result.content[0].text, /TRUE\);/);
+
+  const initAppContext = handleMcpRequest({
+    jsonrpc: "2.0",
+    id: 110,
+    method: "tools/call",
+    params: {
+      name: "airlock_init_app_context",
+      arguments: {
+        cwd: tmpRoot,
+        path: "app",
+        mode: "co-development",
+        specs: ["workspaces/feedback-loop"],
+      },
+    },
+  });
+  assert.equal(initAppContext.result.isError, undefined);
+  assert.match(initAppContext.result.content[0].text, /initialized app context/);
+  assert.match(initAppContext.result.content[0].text, /mode: co-development/);
+  assert.match(initAppContext.result.content[0].text, /seeded_specs: posts/);
+  assert.ok(existsSync(join(tmpRoot, "app", "airlock", "specs.manifest.json")));
+  assert.ok(existsSync(join(tmpRoot, "app", "airlock", "spec-snapshots", "posts.spec.config.json")));
+  assert.ok(existsSync(join(tmpRoot, "app", "airlock", "sample-records", "posts.sample.records.json")));
+  const appManifest = JSON.parse(readFileSync(join(tmpRoot, "app", "airlock", "specs.manifest.json"), "utf8"));
+  assert.equal(appManifest.mode, "co-development");
+  assert.equal(appManifest.specs[0].snapshot_only, true);
 } finally {
   rmSync(tmpRoot, { recursive: true, force: true });
 }
@@ -200,7 +227,7 @@ const input = [
     params: {
       protocolVersion: "2025-06-18",
       capabilities: {},
-      clientInfo: { name: "test", version: "0.1.2" },
+      clientInfo: { name: "test", version: "0.1.3" },
     },
   },
   { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
@@ -243,9 +270,9 @@ const responses = server.stdout
 
 assert.equal(responses.length, 9);
 assert.equal(responses[0].result.serverInfo.name, "airlock");
-assert.equal(responses[0].result.serverInfo.version, "0.1.2");
+assert.equal(responses[0].result.serverInfo.version, "0.1.3");
 assert.equal(responses[1].result.tools[0].name, "airlock_start");
-assert.equal(responses[1].result.tools[0].description, "Return Airlock MCP setup guidance for building and using Airlock specs.");
+assert.equal(responses[1].result.tools[0].description, "Return Airlock MCP setup guidance for specs and apps that use specs.");
 assert.equal(responses[2].result.prompts[0].name, "airlock-start");
 assert.equal(responses[2].result.prompts[0].title, "Start Airlock");
 assert.equal(responses[3].result.resources[0].uri, "airlock://getting-started");
@@ -253,6 +280,10 @@ assert.equal(responses[3].result.resources[0].name, "Airlock getting started");
 assert.match(responses[4].result.content[0].text, /single installed interface/);
 assert.match(responses[4].result.content[0].text, /Git-backed specs repo/);
 assert.match(responses[4].result.content[0].text, /ask where the directory should live/);
+assert.match(responses[4].result.content[0].text, /App-first: build an app or workflow from existing specs/);
+assert.match(responses[4].result.content[0].text, /co-development mode/);
+assert.match(responses[4].result.content[0].text, /read specs/);
+assert.match(responses[4].result.content[0].text, /direct table writes/);
 assert.match(responses[4].result.content[0].text, /What process do you want to improve/);
 assert.match(responses[4].result.content[0].text, /Airlock calls these places interfaces/);
 assert.match(responses[4].result.content[0].text, /If you already have artifacts/);
@@ -261,11 +292,15 @@ assert.doesNotMatch(responses[4].result.content[0].text, /Airlock Star/);
 assert.match(responses[5].result.messages[0].content.text, /Airlock MCP/);
 assert.match(responses[5].result.messages[0].content.text, /Git repo/);
 assert.match(responses[5].result.messages[0].content.text, /where the home-specs/);
+assert.match(responses[5].result.messages[0].content.text, /spec-first, app-first, or co-development/);
+assert.match(responses[5].result.messages[0].content.text, /airlock-mcp init-app-context/);
+assert.match(responses[5].result.messages[0].content.text, /approved\s+Airlock\/Snowflake access paths/);
 assert.match(responses[5].result.messages[0].content.text, /process I want to improve/);
 assert.match(responses[5].result.messages[0].content.text, /CSV or Excel files/);
 assert.match(responses[5].result.messages[0].content.text, /airlock-specs library/);
 assert.match(responses[6].result.contents[0].text, /Spec design: draft, check, revise/);
 assert.match(responses[6].result.contents[0].text, /Airlock operating patterns/);
+assert.match(responses[6].result.contents[0].text, /App and workflow implementation/);
 assert.match(responses[6].result.contents[0].text, /If you already have artifacts/);
 assert.doesNotMatch(responses[6].result.contents[0].text, /Airlock Star/);
 assert.equal(responses[7].error.code, -32601);

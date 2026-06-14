@@ -161,6 +161,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("airlock-mcp", output)
         self.assertIn("forge the handoff", output)
         self.assertIn("init-repo", output)
+        self.assertIn("init-app-context", output)
 
         exit_code, output, _stderr = run_cli(["self-update", "--dry-run"])
         self.assertEqual(exit_code, 0)
@@ -185,6 +186,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("name: airlock-mcp", skill)
             self.assertIn("Spec Design Questions", skill)
             self.assertIn("Artifacts And Libraries", skill)
+            self.assertIn("Apps And Workflows Using Existing Specs", skill)
             self.assertIn("airlock-specs", skill)
 
             agents_path = root / "AGENTS.md"
@@ -192,6 +194,11 @@ class CliTests(unittest.TestCase):
             self.assertIn("reunionstudio/airlock-mcp", agents_text)
             self.assertIn("Specs work should live in a real version-controlled repo", agents_text)
             self.assertIn("ask where it should live", agents_text)
+            self.assertIn("Building Apps With Existing Specs", agents_text)
+            self.assertIn("read specs such as budgets", agents_text)
+            self.assertIn("co-development", agents_text)
+            self.assertIn("init-app-context", agents_text)
+            self.assertIn("Do not write directly to Airlock-owned tables", agents_text)
             self.assertIn("CSV or Excel files", agents_text)
             self.assertIn("current API docs", agents_text)
             agents_path.write_text("custom guidance\n", encoding="utf-8")
@@ -204,6 +211,68 @@ class CliTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             self.assertIn("created AGENTS.md", output)
             self.assertIn("Spec Design Priorities", agents_path.read_text(encoding="utf-8"))
+
+    def test_init_app_context_seeds_snapshots_and_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            workspaces = root / "workspaces"
+            self.assertEqual(
+                run_cli(["init", "expenses", "--pattern", "posts", "--output", str(workspaces)])[0],
+                0,
+            )
+            workspace = workspaces / "expenses"
+            app = root / "budget-app"
+
+            exit_code, output, _stderr = run_cli(
+                [
+                    "init-app-context",
+                    str(app),
+                    "--mode",
+                    "co-development",
+                    "--spec",
+                    str(workspace),
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            self.assertIn("mode: co-development", output)
+            self.assertIn("seeded_specs: posts", output)
+
+            airlock = app / "airlock"
+            manifest_path = airlock / "specs.manifest.json"
+            snapshot_path = airlock / "spec-snapshots" / "posts.spec.config.json"
+            sample_path = airlock / "sample-records" / "posts.sample.records.json"
+            self.assertTrue((airlock / "AGENTS.md").exists())
+            self.assertTrue(snapshot_path.exists())
+            self.assertTrue(sample_path.exists())
+            self.assertTrue((airlock / "generated" / "types" / ".gitkeep").exists())
+            self.assertTrue((airlock / "generated" / "sql" / ".gitkeep").exists())
+
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(manifest["mode"], "co-development")
+            self.assertEqual(manifest["canonical_source"], "specs repo or installed Airlock")
+            self.assertEqual(manifest["specs"][0]["spec_name"], "posts")
+            self.assertEqual(manifest["specs"][0]["role"], "unknown")
+            self.assertTrue(manifest["specs"][0]["snapshot_only"])
+            self.assertEqual(manifest["specs"][0]["snapshot"], "airlock/spec-snapshots/posts.spec.config.json")
+            self.assertEqual(manifest["specs"][0]["sample_records"], "airlock/sample-records/posts.sample.records.json")
+
+            manifest["specs"][0]["role"] = "read"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            exit_code, output, _stderr = run_cli(
+                [
+                    "init-app-context",
+                    str(app),
+                    "--mode",
+                    "app-first",
+                    "--spec",
+                    str(workspace),
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            self.assertIn("updated airlock/specs.manifest.json", output)
+            merged = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(merged["mode"], "app-first")
+            self.assertEqual(merged["specs"][0]["role"], "read")
 
     def test_init_repo_rejects_file_target(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -392,9 +461,16 @@ States, pushback, due dates, order, or cadence: local validation before Airlock 
         self.assertIn("single installed interface", install_surface)
         self.assertIn("Git-backed `<project>-specs`", install_surface)
         self.assertIn("ask where the directory", install_surface)
+        self.assertIn("spec-first, app-first from existing specs, or", install_surface)
+        self.assertIn("co-development of specs and app together", install_surface)
+        self.assertIn("init-app-context", install_surface)
+        self.assertIn("read specs and write specs", install_surface)
         self.assertIn("operating", install_surface)
         self.assertIn("patterns around observe", install_surface)
         self.assertIn("orient, decide, and act", install_surface)
+        self.assertIn("Build An App From Existing Specs", workflows)
+        self.assertIn("Co-Develop Specs And App", workflows)
+        self.assertIn("specs.manifest.json", workflows)
         self.assertIn("Prefer Rust with `rmcp`", install_surface)
         self.assertIn("stdout is the JSON-RPC protocol channel", install_surface)
 

@@ -21,6 +21,6 @@ def about_text() -> str:
     return f"""{MCP_MARK.rstrip()}
 
 version: {__version__}
-commands: init-repo, init, import-spec, clone, rename, archive, restore, list-workspaces, summary, next, check, export-csv, render-sql, self-update
+commands: init-repo, init-app-context, init, import-spec, clone, rename, archive, restore, list-workspaces, summary, next, check, export-csv, render-sql, self-update
 principle: Codex is the conversation; files are memory; Airlock is authority.
 """

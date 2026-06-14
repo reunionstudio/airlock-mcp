@@ -14,6 +14,8 @@ Airlock MCP is intentionally small:
 - `art.py`: small terminal identity and about text.
 - `bootstrap.py`: specs-repo bootstrap files, including `AGENTS.md` and the
   repo-scoped Codex skill.
+- `app_context.py`: app-repo Airlock context seeding for spec snapshots,
+  sample records, generated helper placeholders, and `specs.manifest.json`.
 - `manage.py`: workspace discovery, archive, restore, rename, and next-action
   helpers.
 - `project.py`: checkout discovery and environment override handling.
@@ -55,6 +57,8 @@ The old Airlock Streamlit editor used mode-specific hydration:
 Airlock MCP maps that to files:
 
 - `init-repo`: prepare a separate specs repo for Codex and Airlock MCP
+- `init-app-context`: prepare an app repo `airlock/` folder for app-first or
+  co-development work against existing specs
 - `init`: create from a pattern
 - `import-spec`: edit/import an existing canonical or spec-library config in a
   new workspace
@@ -67,6 +71,12 @@ Airlock MCP maps that to files:
 
 This repo does not try to be the installed Airlock editor. It gives Codex and
 humans a careful drafting surface before Airlock receives the final config.
+
+`init-app-context` does not make app-local snapshots canonical. It gives an app
+repo stable development references for coding, tests, UI planning, and generated
+helpers. Canonical specs remain in the specs repo or installed Airlock. Use
+`--force` to refresh snapshots from canonical workspace files after the spec
+changes.
 
 ## Update Boundary
 
@@ -119,9 +129,10 @@ npx @reunionstudio/airlock-mcp install
 
 The connector implementation belongs in `reunionstudio/airlock-mcp`. Airlock
 MCP is the single installed interface for agents working with Airlock: building
-specs, using specs to pull and push governed data, and capturing improvements
-from real use cases. This workbench owns the spec-building implementation:
-patterns, bootstrap, workspace files, local checks, and the Codex skill.
+specs, using specs to pull and push governed data, building apps or workflows
+that use existing specs, and capturing improvements from real use cases. This
+workbench owns the spec-building implementation: patterns, bootstrap, workspace
+files, local checks, and the Codex skill.
 
 That command is the agent connector/setup entry point, not the user's spec
 workspace. After installing or registering the connector, the user still creates

@@ -16,8 +16,9 @@ This repo is an Airlock MCP workspace for drafting Airlock specs with Codex.
 The public install surface is Airlock MCP, for example
 `npx @reunionstudio/airlock-mcp install`. Airlock MCP is the single installed
 interface for building specs, using specs, pulling and pushing governed data,
-and discovering improvements from real use cases. This project repo remains
-the durable memory for the specs being drafted.
+building apps or workflows that use existing specs, and discovering
+improvements from real use cases. This project repo remains the durable memory
+for the specs being drafted.
 
 ## Repo Naming
 
@@ -45,7 +46,13 @@ installed Airlock app.
 ## Starting A Spec Project
 
 After bootstrap, welcome the user and orient before creating a workspace. Start
-with:
+by asking which delivery mode they want:
+
+1. Spec-first: design governed specs before building the app surface.
+2. App-first: build from existing specs.
+3. Co-development: develop the app and specs together.
+
+For spec-first or co-development work, ask:
 
 What process do you want to improve?
 
@@ -79,10 +86,48 @@ plan for more. Do not create the first workspace until the user chooses a path.
 Create `posts` only when the user wants a shared feedback loop or explicitly
 asks for the posts pattern.
 
+## Building Apps With Existing Specs
+
+Use this path when the user wants to build an app, dashboard, approval queue,
+decision UI, analysis workflow, scheduled agent, or other code that uses specs
+they already have access to. Treat this as app/workflow implementation, not
+spec editing, unless the user explicitly asks to change specs.
+
+Use `airlock-mcp init-app-context` in an app repo when the app needs local
+Airlock context. It creates `airlock/specs.manifest.json`,
+`airlock/spec-snapshots/`, `airlock/sample-records/`, and generated helper
+folders. These files are app-local references, not canonical specs. Canonical
+specs live in the specs repo or installed Airlock.
+
+Identify:
+
+- the app goal and decision the app should support
+- read specs such as budgets, expenses, requests, forecasts, observations,
+  payouts, or reference data
+- write specs such as decisions, approvals, comments, commitments, actions, or
+  follow-ups
+- where the app should run, such as Streamlit, web app, CLI, notebook,
+  scheduled agent, or existing app framework
+- the Airlock access path available in this environment
+- identity, evidence, timestamp, approval, and separation-of-duties rules
+
+The app may orient the user with summaries, comparisons, rankings, exception
+queues, proposals, or dashboards. It should submit governed choices back
+through an Airlock spec contract. Do not write directly to Airlock-owned tables,
+stages, generated views, or generated tables. Do not bypass spec workflow just
+because the app can connect to Snowflake. If no suitable decision or action spec
+exists, explain the gap and propose a small spec-design step.
+
+In co-development mode, keep two tracks visible:
+
+- Spec track: row grain, columns, samples, access, validation, workflow
+- App track: screens, reads, decisions, writes, user actions, runtime
+
 ## Working Style
 
 - Use the repo-scoped `$airlock-mcp` skill for spec drafting, review, and
-  pattern selection.
+  pattern selection, or for app/workflow implementation that uses existing
+  Airlock specs.
 - Keep drafts small and concrete. Prefer one useful governed output over a
   large speculative process map, then keep a plan for later specs.
 - Preserve decisions in workspace files so future Codex sessions can resume

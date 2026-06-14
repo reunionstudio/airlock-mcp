@@ -87,9 +87,13 @@ The MCP-style flow should be:
 4. If Codex is creating it, choose where the repo directory should live before
    files are written.
 5. Tell Codex: `Use Airlock to help me improve a process with specs.`
-6. Airlock MCP welcomes, asks what process the user wants to improve, explains
-   the loop around the process, and proposes a small first spec plus a plan for
-   more.
+6. Airlock MCP welcomes and asks which delivery mode the user wants:
+   spec-first, app-first from existing specs, or co-development.
+7. For spec-first or co-development, Airlock MCP asks what process the user
+   wants to improve, explains the loop around the process, and proposes a small
+   first spec plus a plan for more.
+8. For app-first or co-development, Airlock MCP identifies the app goal,
+   available specs, read specs, write specs, runtime, and approved access path.
 
 `init-repo` creates `AGENTS.md`, `.agents/skills/airlock-mcp/SKILL.md`, and
 `workspaces/`. That is what lets Codex understand prompts such as
@@ -129,6 +133,86 @@ current artifacts and record the divergence.
 
 Ask for the messy version. Help turn it into a small first Airlock spec and a
 plan for more.
+
+## Build An App From Existing Specs
+
+Use this when the user already has access to specs and wants to build an app,
+dashboard, approval queue, decision UI, analysis workflow, scheduled agent, or
+other code that reads from and submits through Airlock.
+
+Do not bootstrap or edit a specs workspace by default. Work in the app repo
+unless the user asks to change specs. Start by asking for:
+
+- the app goal and decision the app should support
+- the specs the user can access
+- read specs, such as budgets, expenses, requests, forecasts, observations,
+  payouts, or reference data
+- write specs, such as decisions, approvals, comments, commitments, actions, or
+  follow-ups
+- where the app should run, such as Streamlit, web app, CLI, notebook,
+  scheduled agent, or an existing framework
+- the available Airlock/Snowflake access path
+- identity, evidence, timestamp, approval, and separation-of-duties needs
+
+The app should follow the loop:
+
+1. Observe/read governed records through approved Airlock or Snowflake surfaces.
+2. Orient with summaries, comparisons, ranked options, recommendations,
+   exception queues, dashboards, or proposals.
+3. Decide by capturing the human or agent choice with rationale and evidence.
+4. Act/write by submitting the decision, approval, action, comment, or follow-up
+   through an Airlock spec contract.
+
+Keep the boundary explicit: do not write directly to Airlock-owned tables,
+stages, generated views, or generated tables. Do not bypass spec workflow just
+because the app can connect to Snowflake. If no suitable decision or action spec
+exists, explain the gap and propose a small spec-design step.
+
+If the app repo needs local context for coding, seed it with spec snapshots and
+a manifest:
+
+```bash
+airlock-mcp init-app-context . --mode app-first --spec ../home-specs/workspaces/expenses
+```
+
+Use `--mode co-development` when the app and specs will evolve together. Repeat
+`--spec` for each workspace or spec JSON file the app should know about. The
+command creates:
+
+```text
+airlock/
+  AGENTS.md
+  README.md
+  specs.manifest.json
+  spec-snapshots/
+  sample-records/
+  generated/
+    types/
+    sql/
+```
+
+The app repo can import or generate helper code from these snapshots, but the
+snapshots are not canonical. Canonical specs remain in the specs repo or
+installed Airlock. Mark each manifest spec as read, write, or read_write for
+the app before building data access and submission flows.
+
+## Co-Develop Specs And App
+
+Use this when the app surface and the Airlock contracts need to shape each
+other. This is common when a dashboard, queue, approval flow, or agent workflow
+reveals which observations, proposals, decisions, or actions need governed
+records.
+
+Keep two tracks visible:
+
+- Spec track: row grain, columns, samples, attachments, access, validation,
+  workflow, and installed Airlock validation.
+- App track: screens, reads, summaries, ranked options, decision capture,
+  governed writes, runtime, and tests.
+
+Start with the smallest useful contract. The app may expose a thin prototype
+against samples while the spec is being drafted, but live submissions should
+wait for installed Airlock validation and the approved read/write path.
 
 ## Start From Feedback
 

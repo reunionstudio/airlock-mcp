@@ -30,8 +30,9 @@ The spec-building workbench lives in this repo under `src/airlock_mcp`,
 `patterns`, `workspaces`, `schemas`, and `.agents/skills/airlock-mcp`.
 Airlock operating patterns live in the same MCP experience: real use cases,
 controlled interface ingestion, OODA loops, governed decisions, separation of
-duties, controlled actions, output review, and improvement capture. This is not
-a second install or separate product surface.
+duties, controlled actions, output review, improvement capture, and app/workflow
+implementation against existing specs. This is not a second install or separate
+product surface.
 
 ## MCP Surface
 
@@ -41,14 +42,24 @@ The bootstrap server exposes:
 - resource: `airlock://getting-started`
 - orientation tool: `airlock_start`
 - workbench tools: `airlock_doctor`, `airlock_init_repo`,
-  `airlock_list_patterns`, `airlock_show_pattern`, `airlock_init_workspace`,
-  `airlock_list_workspaces`, `airlock_check_workspace`, `airlock_summary`,
-  `airlock_next`, `airlock_export_csv`, and `airlock_render_sql`
+  `airlock_init_app_context`, `airlock_list_patterns`,
+  `airlock_show_pattern`, `airlock_init_workspace`, `airlock_list_workspaces`,
+  `airlock_check_workspace`, `airlock_summary`, `airlock_next`,
+  `airlock_export_csv`, and `airlock_render_sql`
 
 These give the agent enough context to start a Git-backed `<project>-specs`
 repo in a user-chosen location, ask what process the user wants to improve,
 enter the spec-building workbench when a first spec is ready to draft, and
-avoid creating a first workspace until the user chooses a path.
+avoid creating a first workspace until the user chooses a path. They also give
+the agent enough product guidance to work in an app repo when the user wants to
+build software that reads from existing specs and submits governed decisions or
+actions through Airlock contracts.
+
+`airlock_init_app_context` is the bridge for app-first and co-development work.
+It creates an app-local `airlock/` folder with spec snapshots, sample records,
+generated helper placeholders, and `specs.manifest.json`. Those files support
+coding, tests, and UI planning, but they are not canonical. Canonical specs
+remain in the specs repo or installed Airlock.
 
 Workbench tools call the bundled Python package with argument arrays and a
 controlled `PYTHONPATH`. They do not expose update commands over MCP. Tool

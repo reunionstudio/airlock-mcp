@@ -23,6 +23,8 @@ const workspaceProperty = {
   maxLength: MAX_ARG_LENGTH,
 };
 
+const appModeValues = ["spec-first", "app-first", "co-development"];
+
 export const WORKBENCH_TOOLS = [
   {
     name: "airlock_doctor",
@@ -37,6 +39,32 @@ export const WORKBENCH_TOOLS = [
         type: "string",
         description: "Specs repo path to initialize. Defaults to the current directory.",
         maxLength: MAX_ARG_LENGTH,
+      },
+      force: forceProperty,
+      cwd: cwdProperty,
+    }),
+  },
+  {
+    name: "airlock_init_app_context",
+    description: "Seed an app repo with airlock/ spec snapshots, samples, generated placeholders, and a manifest.",
+    inputSchema: objectSchema({
+      path: {
+        type: "string",
+        description: "App repo path to initialize. Defaults to the current directory.",
+        maxLength: MAX_ARG_LENGTH,
+      },
+      mode: {
+        type: "string",
+        enum: appModeValues,
+        description: "Development mode. Defaults to app-first.",
+      },
+      specs: {
+        type: "array",
+        items: {
+          type: "string",
+          maxLength: MAX_ARG_LENGTH,
+        },
+        description: "Spec workspace directories or spec JSON files to snapshot.",
       },
       force: forceProperty,
       cwd: cwdProperty,
@@ -230,6 +258,28 @@ function optionalEnum(args, name, allowed, fallback) {
   return value;
 }
 
+function optionalStringArray(args, name) {
+  const value = args?.[name];
+  if (value === undefined || value === null) {
+    return [];
+  }
+  if (!Array.isArray(value)) {
+    throw new Error(`${name} must be an array`);
+  }
+  return value.map((entry, index) => {
+    if (typeof entry !== "string") {
+      throw new Error(`${name}[${index}] must be a string`);
+    }
+    if (entry.length > MAX_ARG_LENGTH || /[\u0000-\u001f\u007f]/.test(entry)) {
+      throw new Error(`${name}[${index}] must be ${MAX_ARG_LENGTH} characters or fewer with no control characters`);
+    }
+    if (entry.startsWith("-")) {
+      throw new Error(`${name}[${index}] must not start with '-'`);
+    }
+    return entry;
+  });
+}
+
 function requiredEnum(args, name, allowed) {
   const value = optionalEnum(args, name, allowed, undefined);
   if (value === undefined) {
@@ -261,6 +311,19 @@ function cliArgsForTool(name, args = {}) {
       return { cwd, cliArgs: ["doctor"] };
     case "airlock_init_repo": {
       const cliArgs = ["init-repo", optionalString(args, "path", ".")];
+      if (force) cliArgs.push("--force");
+      return { cwd, cliArgs };
+    }
+    case "airlock_init_app_context": {
+      const cliArgs = [
+        "init-app-context",
+        optionalString(args, "path", "."),
+        "--mode",
+        optionalEnum(args, "mode", appModeValues, "app-first"),
+      ];
+      for (const spec of optionalStringArray(args, "specs")) {
+        cliArgs.push("--spec", spec);
+      }
       if (force) cliArgs.push("--force");
       return { cwd, cliArgs };
     }

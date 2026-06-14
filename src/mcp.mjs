@@ -7,7 +7,7 @@ const GETTING_STARTED_URI = "airlock://getting-started";
 
 const START_TOOL = {
   name: "airlock_start",
-  description: "Return Airlock MCP setup guidance for building and using Airlock specs.",
+  description: "Return Airlock MCP setup guidance for specs and apps that use specs.",
   inputSchema: {
     type: "object",
     properties: {
@@ -44,10 +44,10 @@ export function handleMcpRequest(message) {
       },
       serverInfo: {
         name: "airlock",
-        version: "0.1.2",
+        version: "0.1.3",
       },
       instructions:
-        "Airlock MCP helps agents improve processes with Airlock specs. Use airlock_start for orientation or the airlock_* tools to bootstrap, draft, check, summarize, export, and render specs.",
+        "Airlock MCP helps agents improve processes with Airlock specs and build apps or workflows that use existing specs. Use airlock_start for orientation or the airlock_* tools to bootstrap, draft, check, summarize, export, and render specs.",
     });
   }
 
@@ -84,7 +84,7 @@ export function handleMcpRequest(message) {
         {
           name: "airlock-start",
           title: "Start Airlock",
-          description: "Bootstrap a Git-backed specs repo and choose the first Airlock path.",
+          description: "Bootstrap a Git-backed specs repo or choose an Airlock app/spec path.",
           arguments: [
             {
               name: "project",
@@ -103,7 +103,7 @@ export function handleMcpRequest(message) {
     }
     const project = params?.arguments?.project || "Home";
     return makeResponse(id, {
-      description: "Start building and using Airlock specs in a Git-backed specs repo.",
+      description: "Start building specs or apps that use Airlock specs.",
       messages: [
         {
           role: "user",
