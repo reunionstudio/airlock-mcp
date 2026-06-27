@@ -247,6 +247,7 @@ def workspace_summary(
         f"  owner_role: {_format_value(core.get('owner_role'))}",
         f"  published: {_format_value(core.get('is_published'))}",
         f"  archived: {_format_value(core.get('is_archived'))}",
+        f"  payload_adapter: {_format_value(core.get('payload_adapter'), default='default')}",
         f"  description: {_truncate(core.get('description')) or 'none'}",
         "",
         "file_rules:",

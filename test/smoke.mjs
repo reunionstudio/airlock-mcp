@@ -102,6 +102,11 @@ assert.ok(toolNames.includes("airlock_check_workspace"));
 assert.ok(toolNames.includes("airlock_export_csv"));
 assert.ok(toolNames.includes("airlock_render_sql"));
 assert.equal(AIRLOCK_TOOLS.find((tool) => tool.name === "airlock_init_workspace").inputSchema.required[0], "name");
+assert.ok(
+  AIRLOCK_TOOLS.find((tool) => tool.name === "airlock_init_workspace").inputSchema.properties.pattern.enum.includes(
+    "okf-knowledge-bundle",
+  ),
+);
 
 const patterns = handleMcpRequest({
   jsonrpc: "2.0",
@@ -112,6 +117,7 @@ const patterns = handleMcpRequest({
 assert.equal(patterns.result.isError, undefined);
 assert.match(patterns.result.content[0].text, /blank/);
 assert.match(patterns.result.content[0].text, /posts/);
+assert.match(patterns.result.content[0].text, /okf-knowledge-bundle/);
 
 const invalidToolArgs = handleMcpRequest({
   jsonrpc: "2.0",
@@ -227,7 +233,7 @@ const input = [
     params: {
       protocolVersion: "2025-06-18",
       capabilities: {},
-      clientInfo: { name: "test", version: "0.1.3" },
+      clientInfo: { name: "test", version: "0.1.4" },
     },
   },
   { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
@@ -270,7 +276,7 @@ const responses = server.stdout
 
 assert.equal(responses.length, 9);
 assert.equal(responses[0].result.serverInfo.name, "airlock");
-assert.equal(responses[0].result.serverInfo.version, "0.1.3");
+assert.equal(responses[0].result.serverInfo.version, "0.1.4");
 assert.equal(responses[1].result.tools[0].name, "airlock_start");
 assert.equal(responses[1].result.tools[0].description, "Return Airlock MCP setup guidance for specs and apps that use specs.");
 assert.equal(responses[2].result.prompts[0].name, "airlock-start");
@@ -283,6 +289,8 @@ assert.match(responses[4].result.content[0].text, /ask where the directory shoul
 assert.match(responses[4].result.content[0].text, /App-first: build an app or workflow from existing specs/);
 assert.match(responses[4].result.content[0].text, /co-development mode/);
 assert.match(responses[4].result.content[0].text, /read specs/);
+assert.match(responses[4].result.content[0].text, /observe\.\*/);
+assert.match(responses[4].result.content[0].text, /observe\.explain_access/);
 assert.match(responses[4].result.content[0].text, /direct table writes/);
 assert.match(responses[4].result.content[0].text, /What process do you want to improve/);
 assert.match(responses[4].result.content[0].text, /Airlock calls these places interfaces/);
@@ -294,6 +302,9 @@ assert.match(responses[5].result.messages[0].content.text, /Git repo/);
 assert.match(responses[5].result.messages[0].content.text, /where the home-specs/);
 assert.match(responses[5].result.messages[0].content.text, /spec-first, app-first, or co-development/);
 assert.match(responses[5].result.messages[0].content.text, /airlock-mcp init-app-context/);
+assert.match(responses[5].result.messages[0].content.text, /airlock\.observe\.\*/);
+assert.match(responses[5].result.messages[0].content.text, /observe\.governance_map/);
+assert.match(responses[5].result.messages[0].content.text, /admin\.list_specs/);
 assert.match(responses[5].result.messages[0].content.text, /approved\s+Airlock\/Snowflake access paths/);
 assert.match(responses[5].result.messages[0].content.text, /process I want to improve/);
 assert.match(responses[5].result.messages[0].content.text, /CSV or Excel files/);
@@ -301,6 +312,7 @@ assert.match(responses[5].result.messages[0].content.text, /airlock-specs librar
 assert.match(responses[6].result.contents[0].text, /Spec design: draft, check, revise/);
 assert.match(responses[6].result.contents[0].text, /Airlock operating patterns/);
 assert.match(responses[6].result.contents[0].text, /App and workflow implementation/);
+assert.match(responses[6].result.contents[0].text, /Governance observation/);
 assert.match(responses[6].result.contents[0].text, /If you already have artifacts/);
 assert.doesNotMatch(responses[6].result.contents[0].text, /Airlock Star/);
 assert.equal(responses[7].error.code, -32601);

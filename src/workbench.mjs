@@ -82,7 +82,7 @@ export const WORKBENCH_TOOLS = [
       {
         pattern: {
           type: "string",
-          enum: ["blank", "posts"],
+          enum: ["blank", "okf-knowledge-bundle", "posts"],
           description: "Pattern to inspect.",
         },
         files: {
@@ -106,7 +106,7 @@ export const WORKBENCH_TOOLS = [
         },
         pattern: {
           type: "string",
-          enum: ["blank", "posts"],
+          enum: ["blank", "okf-knowledge-bundle", "posts"],
           description: "Starting pattern. Defaults to blank.",
         },
         output: {

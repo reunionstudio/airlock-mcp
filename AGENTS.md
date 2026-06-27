@@ -16,6 +16,11 @@ Spec building is bundled inside Airlock MCP, not a second thing users install.
 - After install, the user creates a blank `<project>-specs` Codex project and
   starts chatting there. They should ask for Airlock, not for a separate
   spec-building install.
+- Current installed Airlock separates procedure intent: `observe.*` is the
+  read-only governance observation surface, `agent.*` is governed actor work,
+  and `admin.*` is administrative mutation. App and audit guidance should
+  prefer observe payloads for discovery, health, access explanation, activity,
+  billing events, governance maps, and context packets.
 
 ## MCP Runtime
 

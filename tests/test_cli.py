@@ -27,6 +27,30 @@ class CliTests(unittest.TestCase):
             self.assertTrue((workspace / "spec.config.json").exists())
             self.assertEqual(run_cli(["check", str(workspace)])[0], 0)
 
+    def test_init_okf_knowledge_bundle_workspace_checks_cleanly(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertEqual(
+                run_cli(["init", "sales-context", "--pattern", "okf-knowledge-bundle", "--output", str(root)])[0],
+                0,
+            )
+            workspace = root / "sales-context"
+            self.assertEqual(run_cli(["check", str(workspace)])[0], 0)
+
+            config = json.loads((workspace / "spec.config.json").read_text())
+            self.assertEqual(config["core_config"]["payload_adapter"], "okf_knowledge_bundle")
+            self.assertEqual(config["core_config"]["spec_name"], "okf_knowledge")
+
+            exit_code, summary, _stderr = run_cli(["summary", str(workspace)])
+            self.assertEqual(exit_code, 0)
+            self.assertIn("payload_adapter: okf_knowledge_bundle", summary)
+            self.assertIn("first_record_key: concept_path=runbooks/monthly-close", summary)
+
+            exit_code, output, _stderr = run_cli(["render-sql", str(workspace)])
+            self.assertEqual(exit_code, 0)
+            self.assertIn('"payload_adapter": "okf_knowledge_bundle"', output)
+            self.assertIn("CALL airlock.admin.create_spec", output)
+
     def test_init_defaults_to_blank_workspace(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -198,6 +222,8 @@ class CliTests(unittest.TestCase):
             self.assertIn("read specs such as budgets", agents_text)
             self.assertIn("co-development", agents_text)
             self.assertIn("init-app-context", agents_text)
+            self.assertIn("observe.*", agents_text)
+            self.assertIn("observe.explain_access", agents_text)
             self.assertIn("Do not write directly to Airlock-owned tables", agents_text)
             self.assertIn("CSV or Excel files", agents_text)
             self.assertIn("current API docs", agents_text)
@@ -250,6 +276,10 @@ class CliTests(unittest.TestCase):
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             self.assertEqual(manifest["mode"], "co-development")
             self.assertEqual(manifest["canonical_source"], "specs repo or installed Airlock")
+            self.assertEqual(
+                manifest["installed_airlock_contract"]["observe"],
+                "read-only governance observation, context, activity, health, billing events, and access explanation",
+            )
             self.assertEqual(manifest["specs"][0]["spec_name"], "posts")
             self.assertEqual(manifest["specs"][0]["role"], "unknown")
             self.assertTrue(manifest["specs"][0]["snapshot_only"])
@@ -272,6 +302,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("updated airlock/specs.manifest.json", output)
             merged = json.loads(manifest_path.read_text(encoding="utf-8"))
             self.assertEqual(merged["mode"], "app-first")
+            self.assertIn("installed_airlock_contract", merged)
             self.assertEqual(merged["specs"][0]["role"], "read")
 
     def test_init_repo_rejects_file_target(self) -> None:
@@ -444,6 +475,10 @@ States, pushback, due dates, order, or cadence: local validation before Airlock 
         exit_code, output, _stderr = run_cli(["show-pattern", "posts"])
         self.assertEqual(exit_code, 0)
         self.assertIn("Starter Pattern: Posts", output)
+        exit_code, output, _stderr = run_cli(["show-pattern", "okf-knowledge-bundle"])
+        self.assertEqual(exit_code, 0)
+        self.assertIn("Starter Pattern: OKF Knowledge Bundle", output)
+        self.assertIn("airlock.admin.load_okf_bundle", output)
 
     def test_install_surface_documents_external_mcp_repo(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -471,6 +506,8 @@ States, pushback, due dates, order, or cadence: local validation before Airlock 
         self.assertIn("Build An App From Existing Specs", workflows)
         self.assertIn("Co-Develop Specs And App", workflows)
         self.assertIn("specs.manifest.json", workflows)
+        self.assertIn("okf-knowledge-bundle", workflows)
+        self.assertIn("AIRLOCK_DATA.ACTIVE.V_OKF_CONCEPT_METADATA", readme)
         self.assertIn("Prefer Rust with `rmcp`", install_surface)
         self.assertIn("stdout is the JSON-RPC protocol channel", install_surface)
 

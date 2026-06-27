@@ -111,6 +111,22 @@ Identify:
 - the Airlock access path available in this environment
 - identity, evidence, timestamp, approval, and separation-of-duties rules
 
+Installed Airlock separates procedure intent:
+
+- `observe.*`: read-only governance observation for discovery, health, access
+  explanation, governance maps, activity, billing events, and context packets.
+- `agent.*`: governed agent work in the actor's scope.
+- `admin.*`: administrative mutation and operational changes.
+
+For app-first work, use observe payloads such as `observe.procedures`,
+`observe.specs`, `observe.spec`, `observe.governance_map`,
+`observe.explain_access`, `observe.health`, `observe.activity`,
+`observe.admin_activity`, `observe.spec_admin_activity`, and
+`observe.billing_events` before inventing custom read paths. For `alter_spec`
+activity, use `CHANGED_SECTIONS` and `CHANGED_FIELDS` to triage what changed
+before fetching version snapshots. Do not call retired admin read wrappers such as `admin.list_specs`, `admin.describe_role`,
+or `admin.list_events`; use the matching observe list/detail procedure.
+
 The app may orient the user with summaries, comparisons, rankings, exception
 queues, proposals, or dashboards. It should submit governed choices back
 through an Airlock spec contract. Do not write directly to Airlock-owned tables,

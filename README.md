@@ -14,7 +14,7 @@ It covers the full Airlock loop:
 Spec building and spec-using app guidance are not second things users install.
 They are bundled inside Airlock MCP.
 
-Airlock MCP gives agents three kinds of Airlock help:
+Airlock MCP gives agents four kinds of Airlock help:
 
 1. Spec design: draft, check, revise, import, clone, and prepare specs for
    installed Airlock validation.
@@ -24,6 +24,31 @@ Airlock MCP gives agents three kinds of Airlock help:
 3. App and workflow implementation: build dashboards, queues, decision UIs,
    analyses, and agent workflows that use existing specs through Airlock
    contracts.
+4. Governance observation: use installed Airlock's read-only `observe.*`
+   procedures to inspect setup, access, activity, billing events, health,
+   context packets, and governance maps before deciding what an app or agent
+   should do.
+
+## Installed Airlock Contract
+
+Current Airlock separates procedure intent:
+
+- `airlock.observe.*` is the read-only governance observation surface. It is
+  available to `app_admin` and `app_observer` and is the preferred path for
+  discovery, health checks, access explanation, governance maps, activity,
+  billing event context, and list/detail context packets.
+- `airlock.admin.*` is for admin changes and operational actions such as
+  creating specs, changing roles, loading OKF bundles, rerunning setup, or
+  deleting purge candidates.
+- `airlock.agent.*` is for governed agent work such as listing my
+  specs, validating/loading data, workflow actions, attachments, delegations,
+  and references.
+
+When building an app or workflow, prefer `observe.*` for read-only setup and
+monitoring questions, `agent.*` for governed submissions in the actor's scope,
+and `admin.*` only for intentional administrative mutation. Do not use retired
+admin read wrappers such as `admin.list_specs`, `admin.describe_role`, or
+`admin.list_events`; use the matching observe procedures instead.
 
 ## Install
 
@@ -98,7 +123,8 @@ The server exposes orientation plus local spec-building tools:
 - `airlock_init_app_context`: seed an app repo with spec snapshots, sample
   records, generated helper folders, and an app manifest.
 - `airlock_list_patterns` and `airlock_show_pattern`: inspect starter patterns.
-- `airlock_init_workspace`: create a workspace from `blank` or `posts`.
+- `airlock_init_workspace`: create a workspace from `blank`, `posts`, or
+  `okf-knowledge-bundle`.
 - `airlock_list_workspaces`: inspect active or archived drafts.
 - `airlock_check_workspace`, `airlock_summary`, and `airlock_next`: validate and re-enter a draft.
 - `airlock_export_csv`: render `sample.records.json` as Airlock-ready CSV.
@@ -188,3 +214,17 @@ points, patterns, and ideas. Those library specs are not guaranteed to reflect
 the current shape of any third-party system. Current API docs, real exports,
 samples, schemas, and user-provided artifacts should override library shapes
 when they conflict.
+
+For app-first work against installed Airlock, start with `observe.procedures`,
+`observe.specs`, `observe.spec`, `observe.governance_map`,
+`observe.explain_access`, `observe.health`, and the relevant context packet
+before designing direct SQL helpers. These payloads are intended to be useful
+to agents as well as humans.
+
+For governed Markdown knowledge, use the `okf-knowledge-bundle` pattern. It
+sets `core_config.payload_adapter` to `okf_knowledge_bundle` so installed
+Airlock can load locally validated bundles through
+`airlock.admin.load_okf_bundle(...)`, sync parsed metadata through
+`airlock.admin.sync_okf_bundle_metadata(...)`, and expose accepted concept
+metadata from `AIRLOCK_DATA.ACTIVE.V_OKF_CONCEPT_METADATA`. Draft and rejected
+bundles are not authoritative agent context.

@@ -11,6 +11,12 @@
       "title": "Posts feedback loop",
       "summary": "Small governed feedback stream for discovering what to build next.",
       "directory": "starter-posts"
+    },
+    {
+      "name": "okf-knowledge-bundle",
+      "title": "OKF knowledge bundle",
+      "summary": "Governed Markdown knowledge bundles for accepted agent context.",
+      "directory": "okf-knowledge-bundle"
     }
   ]
 }

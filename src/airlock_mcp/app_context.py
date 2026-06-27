@@ -28,6 +28,22 @@ Use:
 - `generated/types/` for generated application types.
 - `generated/sql/` for reviewed SQL helpers or query templates.
 
+Installed Airlock separates procedure intent:
+
+- `observe.*`: read-only governance observation for discovery, health, access
+  explanation, activity, admin activity, billing events, governance maps, and
+  context packets.
+- `agent.*`: governed agent work in the actor's scope.
+- `admin.*`: administrative mutation and operational changes.
+
+Prefer `observe.*` for app read-side setup and monitoring questions. Use
+`observe.admin_activity` for broad admin mutation and maintenance audit
+questions, and `observe.spec_admin_activity` for one spec's definition-change
+timeline. For `alter_spec` activity, use `CHANGED_SECTIONS` and
+`CHANGED_FIELDS` to triage what changed before fetching version snapshots.
+Do not use retired admin read wrappers such as `admin.list_specs`,
+`admin.describe_role`, or `admin.list_events`; use the matching observe procedure.
+
 Do not store credentials here. Do not write directly to Airlock-owned tables,
 stages, generated views, or generated tables. Use approved Airlock/Snowflake
 access paths and submit governed decisions or actions through spec contracts.
@@ -60,6 +76,15 @@ Use approved Airlock/Snowflake access paths. Do not bypass spec workflow or
 write directly to Airlock-owned tables, stages, generated views, or generated
 tables. If the app needs to submit a decision or action and no suitable write
 spec exists, propose a small spec-design step.
+
+Installed Airlock procedure grammar:
+
+- `observe.*` is read-only governance observation. Use it for discovery,
+  health, access explanation, governance maps, activity, billing events, and
+  context packets.
+- `agent.*` is governed agent work in the actor's scope.
+- `admin.*` is administrative mutation. Do not use retired admin read wrappers;
+  use observe list/detail procedures instead.
 """
 
 
@@ -115,6 +140,11 @@ def _manifest(mode: str, entries: list[dict[str, Any]]) -> dict[str, Any]:
         "mode": mode,
         "canonical_source": "specs repo or installed Airlock",
         "snapshot_policy": "Snapshots are app-local development references, not canonical specs.",
+        "installed_airlock_contract": {
+            "observe": "read-only governance observation, context, activity, health, billing events, and access explanation",
+            "agent": "governed agent work in the actor scope",
+            "admin": "administrative mutation and operational changes",
+        },
         "specs": entries,
         "tracks": {
             "spec_track": "row grain, columns, samples, access, validation, workflow",
@@ -134,6 +164,7 @@ def _merge_manifest(existing: Any, new_manifest: dict[str, Any]) -> dict[str, An
             "mode": new_manifest["mode"],
             "canonical_source": new_manifest["canonical_source"],
             "snapshot_policy": new_manifest["snapshot_policy"],
+            "installed_airlock_contract": new_manifest["installed_airlock_contract"],
             "tracks": new_manifest["tracks"],
         }
     )
@@ -265,7 +296,8 @@ def format_app_context_result(result: AppContextResult) -> str:
             "next:",
             "1. Treat spec snapshots as app-local references, not canonical specs.",
             "2. Mark each manifest spec as read, write, or read_write for the app.",
-            "3. Build app reads and governed submissions through approved Airlock/Snowflake access paths.",
+            "3. Use observe.* for read-only governance discovery and agent.* for governed actor work.",
+            "4. Build governed submissions through approved Airlock/Snowflake access paths.",
         ]
     )
     return "\n".join(lines)

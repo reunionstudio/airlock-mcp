@@ -1,0 +1,16 @@
+{
+  "spec_name": "okf_knowledge",
+  "filename": "okf_knowledge_sample.csv",
+  "records": [
+    {
+      "concept_path": "runbooks/monthly-close",
+      "concept_type": "Runbook",
+      "bundle_version": "2026.06"
+    },
+    {
+      "concept_path": "metrics/net-revenue",
+      "concept_type": "Metric",
+      "bundle_version": "2026.06"
+    }
+  ]
+}

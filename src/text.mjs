@@ -53,10 +53,21 @@ and a plan for more. Do not create the first workspace until I choose a path.
 
 If I want app-first or co-development, ask for the app goal, the specs I can
 access, which specs are read sources, which spec records decisions or actions,
-and where the app should run. Offer to run \`airlock-mcp init-app-context\` in
-the app repo to seed \`airlock/specs.manifest.json\`, spec snapshots, sample
-records, and generated helper folders. Help code the app using approved
-Airlock/Snowflake access paths. Do not write directly to Airlock-owned tables
+and where the app should run. Teach the installed Airlock procedure split:
+\`airlock.observe.*\` is read-only governance observation,
+\`airlock.agent.*\` is governed agent work, and \`airlock.admin.*\` is
+administrative mutation. Prefer observe payloads such as
+\`observe.procedures\`, \`observe.specs\`, \`observe.spec\`,
+\`observe.governance_map\`, \`observe.explain_access\`, \`observe.health\`,
+\`observe.activity\`, \`observe.admin_activity\`, \`observe.spec_admin_activity\`,
+and \`observe.billing_events\` before inventing custom read paths. For \`alter_spec\`
+activity, use \`CHANGED_SECTIONS\` and \`CHANGED_FIELDS\` to triage what changed
+before fetching version snapshots. Offer to run \`airlock-mcp init-app-context\`
+in the app repo to seed \`airlock/specs.manifest.json\`, spec snapshots, sample records, and
+generated helper folders. Help code the app using approved Airlock/Snowflake access paths.
+Do not use retired admin read wrappers such as
+\`admin.list_specs\`, \`admin.describe_role\`, or \`admin.list_events\`; use
+the matching observe procedure. Do not write directly to Airlock-owned tables
 or bypass spec workflow.`;
 }
 
@@ -78,11 +89,13 @@ Airlock MCP will offer:
   - spec-first, app-first, and co-development planning
   - spec design with the bundled workbench
   - Airlock operating patterns for OODA loops and separation of duties
+  - read-only observe procedures for governance maps, health, access explanation, activity, billing events, and context packets
   - app context seeding with spec snapshots and manifests
   - app and workflow coding against existing Airlock specs
   - observe specs for controlled interface ingestion
   - orient specs for proposals, context, scoring, or exception queues
   - decision specs and action specs for governed follow-through
+  - OKF-style Markdown knowledge bundles for accepted agent context
   - artifact-grounded drafts from CSV, Excel, JSON, API docs, schemas, forms, screenshots, PDFs, or exports
   - airlock-specs library patterns as starting points, checked against current artifacts`;
 }
@@ -95,7 +108,7 @@ Airlock. It helps a person and their agent improve processes by designing
 specs, using specs for governed data movement, planning OODA loops, and building
 apps or workflows that read from and submit through existing specs.
 
-Airlock MCP gives agents three kinds of Airlock help:
+Airlock MCP gives agents four kinds of Airlock help:
 
 1. Spec design: draft, check, revise, import, clone, and prepare specs for
    installed Airlock validation.
@@ -105,6 +118,10 @@ Airlock MCP gives agents three kinds of Airlock help:
 3. App and workflow implementation: build dashboards, queues, decision UIs,
    analyses, and agent workflows that use existing specs without bypassing
    Airlock contracts.
+4. Governance observation: use installed Airlock's read-only \`observe.*\`
+   procedures to inspect setup, access, activity, billing events, health,
+   context packets, and governance maps before deciding what an app or agent
+   should do.
 
 Start in a Git-backed specs repo such as ${specsRepoName(project)}. GitHub is
 the recommended default when the user has it set up, but any normal repository
@@ -146,15 +163,33 @@ points, patterns, and ideas. Library specs are not guaranteed to match the
 current shape of any third-party system. Prefer current API docs, real exports,
 samples, and other artifacts when they conflict with the library.
 
+For governed Markdown knowledge, use the \`okf-knowledge-bundle\` pattern. It
+creates a spec with \`core_config.payload_adapter\` set to
+\`okf_knowledge_bundle\`. Installed Airlock loads locally validated bundles with
+\`airlock.admin.load_okf_bundle(...)\`, can sync parsed metadata with
+\`airlock.admin.sync_okf_bundle_metadata(...)\`, and exposes authoritative
+accepted context through \`AIRLOCK_DATA.ACTIVE.V_OKF_CONCEPT_METADATA\`.
+
 Give Codex the messy version of the process. Airlock MCP should help turn it
 into a small first Airlock spec and a plan for more.
 
 For app-first and co-development work, give Codex the app goal and available
 specs. Airlock MCP should identify read specs, write specs, orienting views,
-decision capture, and safe Airlock/Snowflake access paths. It can seed an app
-repo with \`airlock/specs.manifest.json\`, spec snapshots, sample records, and
-generated helper folders. The app should submit decisions, approvals, actions,
-comments, or follow-ups through Airlock spec contracts, not direct table writes.
+decision capture, and safe Airlock/Snowflake access paths. Installed Airlock
+uses \`observe.*\` for read-only governance observation, \`agent.*\` for
+governed agent work, and \`admin.*\` for administrative mutation. Start
+read-side discovery with observe payloads such as \`observe.procedures\`,
+\`observe.specs\`, \`observe.spec\`, \`observe.governance_map\`,
+\`observe.explain_access\`, \`observe.health\`, \`observe.activity\`,
+\`observe.admin_activity\`, \`observe.spec_admin_activity\`, and \`observe.billing_events\`;
+for \`alter_spec\` activity, use \`CHANGED_SECTIONS\` and \`CHANGED_FIELDS\` to
+triage what changed before fetching version snapshots. Do not use retired admin
+read wrappers such as \`admin.list_specs\`, \`admin.describe_role\`, or
+\`admin.list_events\`. It can
+seed an app repo with \`airlock/specs.manifest.json\`, spec snapshots, sample
+records, and generated helper folders. The app should submit decisions,
+approvals, actions, comments, or follow-ups through Airlock spec contracts, not
+direct table writes.
 In co-development mode, keep the spec track and app track visible side by side.`;
 }
 

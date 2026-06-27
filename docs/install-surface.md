@@ -24,6 +24,13 @@ that reads and submits through Airlock contracts.
 The install command is not the spec workspace. It is the connector/setup entry
 point. The specs repo is still the durable memory.
 
+For installed Airlock access, teach the current procedure split:
+`airlock.observe.*` is the read-only governance observation surface,
+`airlock.agent.*` is governed agent work, and `airlock.admin.*` is
+administrative mutation. App-first and audit-style workflows should use
+observe payloads for discovery, context, health, access explanation, activity,
+billing events, and governance maps before considering custom SQL helpers.
+
 The connector package and MCP server live in `reunionstudio/airlock-mcp`.
 This workbench provides the spec-building implementation inside that one
 installed Airlock MCP experience.
@@ -118,9 +125,11 @@ The first release should optimize the user journey:
    forms, screenshots, PDFs, exports, or message examples
 6. use `airlock-specs` library patterns as starting points when useful, while
    preferring current artifacts over library shapes when they conflict
-7. map where information comes in and actions go out
-8. create the first workspace only after the user chooses a small first spec
-9. keep a plan for later specs that improve the full loop
+7. use the `okf-knowledge-bundle` pattern when the useful artifact is governed
+   Markdown knowledge for accepted agent context
+8. map where information comes in and actions go out
+9. create the first workspace only after the user chooses a small first spec
+10. keep a plan for later specs that improve the full loop
 
 For users who already have specs and want to build software, optimize a second
 journey:
@@ -131,10 +140,11 @@ journey:
 4. identify read specs and write specs
 5. seed app-local Airlock context with `airlock-mcp init-app-context` when the
    app needs spec snapshots, samples, generated helpers, and a manifest
-6. build orienting views, dashboards, queues, proposals, or recommendations
-7. capture decisions, approvals, actions, comments, or follow-ups through
+6. inspect installed setup with read-only `observe.*` procedures when available
+7. build orienting views, dashboards, queues, proposals, or recommendations
+8. capture decisions, approvals, actions, comments, or follow-ups through
    Airlock spec contracts
-8. avoid direct writes to Airlock-owned tables and avoid bypassing spec workflow
+9. avoid direct writes to Airlock-owned tables and avoid bypassing spec workflow
 
 For users who are developing the app and specs together, optimize a third
 journey:

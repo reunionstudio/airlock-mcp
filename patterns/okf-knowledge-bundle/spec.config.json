@@ -1,0 +1,64 @@
+{
+  "core_config": {
+    "spec_name": "okf_knowledge",
+    "spec_alias": "OKF Knowledge",
+    "description": "Governed OKF-style Markdown knowledge bundles for accepted agent context.",
+    "owner_role": "app_admin",
+    "current_mode": "append",
+    "is_published": false,
+    "is_locked": false,
+    "is_archived": false,
+    "is_multi_role": false,
+    "file_workflow": false,
+    "workflow_steps": [],
+    "materialize_as_table": false,
+    "payload_adapter": "okf_knowledge_bundle"
+  },
+  "column_config": [
+    {
+      "name": "concept_path",
+      "type": "string",
+      "description": "Stable normalized Markdown concept path without the .md suffix.",
+      "tests": ["not_null", "unique"]
+    },
+    {
+      "name": "concept_type",
+      "type": "string",
+      "description": "Concept type from OKF frontmatter.",
+      "tests": ["not_null"]
+    },
+    {
+      "name": "bundle_version",
+      "type": "string",
+      "description": "Bundle version containing the concept.",
+      "tests": ["not_null"]
+    }
+  ],
+  "rules": [],
+  "file_rules": {
+    "file_format": {
+      "file_type": "csv",
+      "record_delimiter": "\n",
+      "field_delimiter": ",",
+      "field_optionally_enclosed_by": "\"",
+      "escape_unenclosed_field": "\\",
+      "encoding": "UTF8",
+      "parse_header": true,
+      "save_header": true
+    },
+    "filename_rules": {
+      "enforce_filename_pattern": false,
+      "filename_pattern": null,
+      "sample_filenames": null
+    }
+  },
+  "sample_data": {
+    "sample_data_acknowledged": true,
+    "sample_rows": [],
+    "edited_sample_data": "concept_path,concept_type,bundle_version\nrunbooks/monthly-close,Runbook,2026.06\nmetrics/net-revenue,Metric,2026.06\n"
+  },
+  "attachment_policy": {
+    "attachments_enabled": true,
+    "attachment_required": false
+  }
+}

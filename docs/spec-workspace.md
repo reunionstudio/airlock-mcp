@@ -22,6 +22,11 @@ Use `airlock-mcp rename`, `archive`, and `restore` to organize draft folders.
 `rename` retitles spec identity by default; pass `--keep-spec-identity` for a
 pure folder move.
 
+For `okf-knowledge-bundle` workspaces, `sample.records.json` is only a small
+metadata sample for the draft spec. The governed payload is a locally validated
+Markdown directory or `.zip` bundle loaded through installed Airlock's
+`airlock.admin.load_okf_bundle(...)` path.
+
 `review.md` should identify the workspace source mode:
 
 - `create`: started from an Airlock MCP pattern

@@ -74,19 +74,28 @@ deterministic checker for local spec drafts.
 4. Create `posts` only when the user chooses a feedback loop, asks for humans
    and agents to provide feedback, or explicitly requests the posts pattern.
    If the user is unsure, continue process discovery before creating files.
-5. Use `airlock-mcp import-spec <json-file> <name>` when starting from a
+5. Create `okf-knowledge-bundle` when the user needs governed Markdown
+   knowledge, accepted agent context, policies, runbooks, metric definitions,
+   investigations, or other business context organized as an OKF-style bundle.
+   The spec must declare `core_config.payload_adapter =
+   "okf_knowledge_bundle"`. Installed Airlock loads validated bundles with
+   `airlock.admin.load_okf_bundle(...)`, can sync parsed metadata with
+   `airlock.admin.sync_okf_bundle_metadata(...)`, and exposes authoritative
+   accepted context through `AIRLOCK_DATA.ACTIVE.V_OKF_CONCEPT_METADATA`.
+   Draft and rejected bundles are not authoritative agent context.
+6. Use `airlock-mcp import-spec <json-file> <name>` when starting from a
    spec-library file, an exported `SPEC_CONFIG`, or an existing canonical config.
    If the source is from `airlock-specs`, treat it as a reusable draft pattern.
    Check actual API docs, CSV/Excel/JSON samples, schemas, or other artifacts
    before assuming the source fields match a live third-party system.
-6. Use `airlock-mcp clone <source-workspace> <name>` when creating a related
+7. Use `airlock-mcp clone <source-workspace> <name>` when creating a related
    draft from an existing workspace. Treat clone like the old Streamlit UI:
    preserve the shape but deliberately reset spec identity.
-7. Keep the draft small. Prefer one useful governed output over a large
+8. Keep the draft small. Prefer one useful governed output over a large
    speculative system, then keep a plan for later specs.
-8. On later sessions, run `airlock-mcp list-workspaces` when the target draft
+9. On later sessions, run `airlock-mcp list-workspaces` when the target draft
    is not obvious.
-9. Run `airlock-mcp summary <workspace>` and
+10. Run `airlock-mcp summary <workspace>` and
    `airlock-mcp next <workspace>` before editing so
    the current shape, sample count, access model, and local check status are
    visible.
@@ -94,14 +103,14 @@ deterministic checker for local spec drafts.
    core, file rules, attachments, guest access, column rules, samples, notes,
    and check status. Do not make the user infer the current spec from file
    links alone.
-10. Run `airlock-mcp check <workspace>` after changing draft config or sample
+11. Run `airlock-mcp check <workspace>` after changing draft config or sample
    records.
-11. Keep `sample.records.json` as the agent-friendly authoring shape. Use
+12. Keep `sample.records.json` as the agent-friendly authoring shape. Use
    `airlock-mcp export-csv <workspace>` when the same examples need to be
    reviewed or loaded through Airlock's CSV path.
-12. Use `airlock-mcp rename`, `archive`, and `restore` when organizing
+13. Use `airlock-mcp rename`, `archive`, and `restore` when organizing
    workspaces so spec identity changes remain deliberate.
-13. Use `airlock-mcp render-sql <workspace>` only as a validate-only review
+14. Use `airlock-mcp render-sql <workspace>` only as a validate-only review
    artifact. Installed Airlock validation remains authoritative.
 
 ## Spec Design Questions
@@ -199,6 +208,25 @@ Start by identifying:
    user's environment.
 6. Identity, evidence, timestamps, approval, and separation-of-duties rules.
 
+Use the current installed Airlock procedure grammar when the app talks to
+Airlock:
+
+- `airlock.observe.*` is read-only and is the first-class governance
+  observation surface for `app_admin` and `app_observer`.
+- `airlock.admin.*` performs administrative changes and operational mutations.
+- `airlock.agent.*` performs governed user or agent work in the actor's scope.
+
+For app-first work, prefer `observe.procedures`, `observe.specs`,
+`observe.spec`, `observe.governance_map`, `observe.explain_access`,
+`observe.health`, `observe.activity`, `observe.admin_activity`,
+`observe.spec_admin_activity`, `observe.billing`, `observe.billing_events`, and
+the relevant context packets before inventing
+custom read paths. Do not tell agents to call retired admin read wrappers such
+as `admin.list_specs`, `admin.describe_role`, `admin.get_spec`, or
+`admin.list_events`; use the matching observe list/detail procedure instead.
+Use `admin.*` only when the app is intentionally changing Airlock setup or
+running an admin operation.
+
 Help the app follow the loop:
 
 - Observe/read: fetch existing governed data through approved Airlock or
@@ -254,6 +282,8 @@ In co-development mode, keep two tracks visible:
 Read only the relevant pattern files:
 
 - `patterns/starter-posts/` when the user needs a first feedback loop.
+- `patterns/okf-knowledge-bundle/` when the user needs governed Markdown
+  business context for people or agents.
 - `patterns/guest-access/` when isolation or sharing is the hard part.
 - `patterns/spec-types/` when choosing observation, commitment,
   reconciliation, or reference/master-data shape.

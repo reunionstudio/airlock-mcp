@@ -154,6 +154,24 @@ unless the user asks to change specs. Start by asking for:
 - the available Airlock/Snowflake access path
 - identity, evidence, timestamp, approval, and separation-of-duties needs
 
+Use the installed Airlock procedure grammar:
+
+- `airlock.observe.*` is read-only and should answer discovery, governance,
+  audit, health, activity, billing-event, and access-explanation questions.
+- `airlock.agent.*` is for governed work by the current actor, including
+  validation, loading, workflow actions, attachments, references, and
+  delegations.
+- `airlock.admin.*` is for administrative mutation and operational changes.
+
+For app-first work, start with observe payloads such as `observe.procedures`,
+`observe.specs`, `observe.spec`, `observe.governance_map`,
+`observe.explain_access`, `observe.health`, `observe.activity`,
+`observe.admin_activity`, `observe.spec_admin_activity`, `observe.billing`, and
+`observe.billing_events`. For `alter_spec` activity, use `CHANGED_SECTIONS` and
+`CHANGED_FIELDS` to triage what changed before fetching version snapshots. Do not use retired admin read
+wrappers such as `admin.list_specs`, `admin.describe_role`, `admin.get_spec`,
+or `admin.list_events`; use observe list/detail procedures instead.
+
 The app should follow the loop:
 
 1. Observe/read governed records through approved Airlock or Snowflake surfaces.
@@ -227,6 +245,28 @@ airlock-mcp check workspaces/feedback-loop
 
 Then ask Codex to help decide what the posts should observe, who responds, and
 what next spec should grow from the feedback.
+
+## Start From Governed Knowledge
+
+Use this when the user wants accepted Markdown business context for people or
+agents: policies, runbooks, metric definitions, investigations, decisions, or
+operating notes.
+
+```bash
+airlock-mcp init sales-context --pattern okf-knowledge-bundle
+airlock-mcp check workspaces/sales-context
+```
+
+This pattern sets `core_config.payload_adapter` to `okf_knowledge_bundle`.
+Installed Airlock loads locally validated bundles with
+`airlock.admin.load_okf_bundle(...)`, can refresh parsed metadata with
+`airlock.admin.sync_okf_bundle_metadata(...)`, and exposes authoritative
+accepted concept metadata through
+`AIRLOCK_DATA.ACTIVE.V_OKF_CONCEPT_METADATA`.
+
+Do not treat draft or rejected Markdown bundles as authoritative agent context.
+The MCP local checker validates the spec workspace; bundle validation belongs
+to Airlock's OKF validator and installed procedures.
 
 ## Start From A Known Process
 
