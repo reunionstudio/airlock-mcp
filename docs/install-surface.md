@@ -30,6 +30,13 @@ For installed Airlock access, teach the current procedure split:
 administrative mutation. App-first and audit-style workflows should use
 observe payloads for discovery, context, health, access explanation, activity,
 billing events, and governance maps before considering custom SQL helpers.
+When a read-only reference spec declares `restricted_reference` or
+`reference_config.restricted_reference`, agents should avoid broad
+`agent.select_reference_data` reads and use `agent.get_reference_record` for a
+known lookup value and purpose, with `observe.reference_context`,
+`observe.usage_limits`, `observe.usage_limit`, and
+`observe.explain_access(action => 'get_reference_record', object_key => ...)`
+for planning and audit.
 
 The connector package and MCP server live in `reunionstudio/airlock-mcp`.
 This workbench provides the spec-building implementation inside that one

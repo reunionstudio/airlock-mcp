@@ -127,6 +127,18 @@ activity, use `CHANGED_SECTIONS` and `CHANGED_FIELDS` to triage what changed
 before fetching version snapshots. Do not call retired admin read wrappers such as `admin.list_specs`, `admin.describe_role`,
 or `admin.list_events`; use the matching observe list/detail procedure.
 
+Restricted references are one-record interaction contracts for read-only
+reference specs. If `agent.describe_spec`, `observe.spec_config`, or
+`observe.reference_context` shows `restricted_reference` or
+`reference_config.restricted_reference`, do not enumerate the protected
+reference, build a populated picker, or use broad `agent.select_reference_data`
+for that object path. Get the lookup value from the user's case/work context,
+then call `agent.get_reference_record` with the configured `object_key`, lookup
+value, purpose, and role lens. Use `observe.usage_limits`,
+`observe.usage_limit`, and
+`observe.explain_access(action => 'get_reference_record', object_key => ...)`
+for planning and audit without reading raw reference rows.
+
 The app may orient the user with summaries, comparisons, rankings, exception
 queues, proposals, or dashboards. It should submit governed choices back
 through an Airlock spec contract. Do not write directly to Airlock-owned tables,

@@ -221,6 +221,25 @@ For app-first work against installed Airlock, start with `observe.procedures`,
 before designing direct SQL helpers. These payloads are intended to be useful
 to agents as well as humans.
 
+Restricted references are one-record interaction contracts. When
+`observe.reference_context`, `observe.spec_config`, or `agent.describe_spec`
+shows `restricted_reference` or `reference_config.restricted_reference`, agents
+must not call broad
+`agent.select_reference_data` for that object path and must not enumerate values
+or build a populated picker from the protected reference. The agent should get
+the lookup value from the user's case/work context, then call
+`agent.get_reference_record` with the configured `object_key`, lookup value,
+purpose, and role lens. The procedure applies configured reference row filters,
+checks active `action_limit` Expectations before returning a record, always
+records the safe `REFERENCE_READ` event used for budgeting, and returns at most
+one `RECORD`. Branch on codes such as `OK`, `NOT_FOUND`,
+`NON_UNIQUE_LOOKUP_KEY`, `PURPOSE_REQUIRED`, `USAGE_LIMIT_BLOCKED`, and
+`REFERENCE_READ_EVENT_FAILED`, and report `USAGE_CONTEXT` fields such as
+`action_limit_used` and `action_time_period`. Auditors and planning agents can
+inspect `observe.usage_limits`, `observe.usage_limit`, and
+`observe.explain_access(action => 'get_reference_record', object_key => ...)`
+without reading raw reference rows.
+
 For governed Markdown knowledge, use the `okf-knowledge-bundle` pattern. It
 sets `core_config.payload_adapter` to `okf_knowledge_bundle` so installed
 Airlock can load locally validated bundles through

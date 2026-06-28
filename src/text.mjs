@@ -65,6 +65,21 @@ activity, use \`CHANGED_SECTIONS\` and \`CHANGED_FIELDS\` to triage what changed
 before fetching version snapshots. Offer to run \`airlock-mcp init-app-context\`
 in the app repo to seed \`airlock/specs.manifest.json\`, spec snapshots, sample records, and
 generated helper folders. Help code the app using approved Airlock/Snowflake access paths.
+When a reference spec declares \`restricted_reference\` or
+\`reference_config.restricted_reference\`, do not enumerate values, build a
+populated picker, or call broad \`agent.select_reference_data\`. Get the lookup
+value from the user's case/work context and call
+\`agent.get_reference_record\` for the configured \`object_key\`, purpose, and
+role lens. It returns at most one record, applies reference row filters, checks
+\`action_limit\` before returning data, and always records the safe
+\`REFERENCE_READ\` event used for budgeting. Branch on \`OK\`, \`NOT_FOUND\`,
+\`NON_UNIQUE_LOOKUP_KEY\`, \`PURPOSE_REQUIRED\`, \`USAGE_LIMIT_BLOCKED\`, and
+\`REFERENCE_READ_EVENT_FAILED\`; report \`USAGE_CONTEXT\` fields such as
+\`action_limit_used\` and \`action_time_period\`. Use
+\`observe.reference_context\`, \`observe.usage_limits\`, \`observe.usage_limit\`,
+and \`observe.explain_access(action => 'get_reference_record', object_key => ...)\`
+for read-only planning and audit.
+
 Do not use retired admin read wrappers such as
 \`admin.list_specs\`, \`admin.describe_role\`, or \`admin.list_events\`; use
 the matching observe procedure. Do not write directly to Airlock-owned tables
@@ -185,7 +200,10 @@ read-side discovery with observe payloads such as \`observe.procedures\`,
 for \`alter_spec\` activity, use \`CHANGED_SECTIONS\` and \`CHANGED_FIELDS\` to
 triage what changed before fetching version snapshots. Do not use retired admin
 read wrappers such as \`admin.list_specs\`, \`admin.describe_role\`, or
-\`admin.list_events\`. It can
+\`admin.list_events\`. If a reference spec declares \`restricted_reference\` or
+\`reference_config.restricted_reference\`, do not enumerate the protected
+reference; use \`agent.get_reference_record\` for a known lookup value and
+\`observe.usage_limits\` / \`observe.usage_limit\` for budget visibility. It can
 seed an app repo with \`airlock/specs.manifest.json\`, spec snapshots, sample
 records, and generated helper folders. The app should submit decisions,
 approvals, actions, comments, or follow-ups through Airlock spec contracts, not

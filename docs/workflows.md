@@ -172,6 +172,21 @@ For app-first work, start with observe payloads such as `observe.procedures`,
 wrappers such as `admin.list_specs`, `admin.describe_role`, `admin.get_spec`,
 or `admin.list_events`; use observe list/detail procedures instead.
 
+Restricted references are one-record interaction contracts for read-only
+reference specs. When `observe.reference_context`, `observe.spec_config`, or
+`agent.describe_spec` shows `restricted_reference` or
+`reference_config.restricted_reference`, do not enumerate the protected
+reference, build a populated picker, or use broad `agent.select_reference_data`
+for that object path. Get the lookup value from the user's case/work context,
+then call `agent.get_reference_record` with the configured `object_key`, lookup
+value, purpose, and role lens. The procedure returns at most one `RECORD`,
+applies reference row filters, checks active `action_limit` Expectations before
+returning data, and records the safe `REFERENCE_READ` event used for usage
+budgeting. Use `observe.reference_context`, `observe.usage_limits`,
+`observe.usage_limit`, and
+`observe.explain_access(action => 'get_reference_record', object_key => ...)`
+for planning and audit without reading raw reference rows.
+
 The app should follow the loop:
 
 1. Observe/read governed records through approved Airlock or Snowflake surfaces.

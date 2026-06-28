@@ -177,7 +177,7 @@ class CliTests(unittest.TestCase):
                 "post_id,reply_to_post_id,submitted_by,posted_at,body,tags,related_area,related_process,details",
             )
             self.assertIn("POST-001", row)
-            self.assertIn('"{""agent"":{""name"":""Deb""}', row)
+            self.assertIn('"{""agent"":{""name"":""csmith""}', row)
 
     def test_about_and_self_update_dry_run(self) -> None:
         exit_code, output, _stderr = run_cli(["about"])

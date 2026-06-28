@@ -1,6 +1,6 @@
 {
   "name": "@reunionstudio/airlock-mcp",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Single-install MCP interface for Airlock agents.",
   "type": "module",
   "repository": {

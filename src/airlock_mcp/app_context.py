@@ -44,6 +44,16 @@ timeline. For `alter_spec` activity, use `CHANGED_SECTIONS` and
 Do not use retired admin read wrappers such as `admin.list_specs`,
 `admin.describe_role`, or `admin.list_events`; use the matching observe procedure.
 
+Restricted references are one-record interaction contracts. If a reference
+spec declares `restricted_reference` or `reference_config.restricted_reference`,
+do not enumerate values or use broad `agent.select_reference_data` for that
+object path. Get the lookup value from the user's case/work context and call
+`agent.get_reference_record` with the configured `object_key`, lookup value,
+purpose, and role lens. Use `observe.reference_context`,
+`observe.usage_limits`, `observe.usage_limit`, and
+`observe.explain_access(action => 'get_reference_record', object_key => ...)`
+for planning and audit without reading raw reference rows.
+
 Do not store credentials here. Do not write directly to Airlock-owned tables,
 stages, generated views, or generated tables. Use approved Airlock/Snowflake
 access paths and submit governed decisions or actions through spec contracts.
@@ -85,6 +95,13 @@ Installed Airlock procedure grammar:
 - `agent.*` is governed agent work in the actor's scope.
 - `admin.*` is administrative mutation. Do not use retired admin read wrappers;
   use observe list/detail procedures instead.
+
+For restricted reference specs, do not enumerate protected object paths or use
+broad `agent.select_reference_data`. Use `agent.get_reference_record` for a
+known lookup value and purpose, and use `observe.reference_context`,
+`observe.usage_limits`, `observe.usage_limit`, and
+`observe.explain_access(action => 'get_reference_record', object_key => ...)`
+for planning and audit.
 """
 
 
@@ -144,6 +161,7 @@ def _manifest(mode: str, entries: list[dict[str, Any]]) -> dict[str, Any]:
             "observe": "read-only governance observation, context, activity, health, billing events, and access explanation",
             "agent": "governed agent work in the actor scope",
             "admin": "administrative mutation and operational changes",
+            "restricted_reference": "one-record reference lookup through agent.get_reference_record; do not enumerate protected reference paths",
         },
         "specs": entries,
         "tracks": {

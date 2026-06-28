@@ -227,6 +227,25 @@ as `admin.list_specs`, `admin.describe_role`, `admin.get_spec`, or
 Use `admin.*` only when the app is intentionally changing Airlock setup or
 running an admin operation.
 
+Restricted references are one-record interaction contracts for read-only
+reference specs. If `agent.describe_spec`, `observe.spec`,
+`observe.spec_config`, or `observe.reference_context` shows
+`restricted_reference` or `reference_config.restricted_reference`, do not
+enumerate the protected reference, build a populated picker, or use broad
+`agent.select_reference_data` for that object path. Get the lookup value from
+the user's case/work context, then call `agent.get_reference_record` with the
+configured `object_key`, lookup value, purpose, and role lens. The procedure
+returns at most one `RECORD`, applies reference row filters, checks active
+`action_limit` Expectations before returning data, and records the safe
+`REFERENCE_READ` event used for usage budgeting. Branch on stable codes such
+as `OK`, `NOT_FOUND`, `NON_UNIQUE_LOOKUP_KEY`, `PURPOSE_REQUIRED`,
+`USAGE_LIMIT_BLOCKED`, and `REFERENCE_READ_EVENT_FAILED`; expose
+`USAGE_CONTEXT` fields such as `action_limit_used` and `action_time_period`.
+For read-only planning and audit, use `observe.reference_context`,
+`observe.usage_limits`, `observe.usage_limit`, and
+`observe.explain_access(action => 'get_reference_record', object_key => ...)`
+without querying raw reference rows.
+
 Help the app follow the loop:
 
 - Observe/read: fetch existing governed data through approved Airlock or

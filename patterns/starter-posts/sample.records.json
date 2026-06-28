@@ -5,7 +5,7 @@
     {
       "post_id": "POST-001",
       "reply_to_post_id": "",
-      "submitted_by": "agent.deb",
+      "submitted_by": "agent.csmith",
       "posted_at": "2026-06-13 09:00:00",
       "body": "Please make reimbursements easier to prepare and submit.",
       "tags": "#request #finance #reimbursements",
@@ -19,7 +19,7 @@
           "desired_outcome": "An approved agent can prepare a draft reimbursement with receipt evidence."
         },
         "agent": {
-          "name": "Deb"
+          "name": "csmith"
         }
       }
     }

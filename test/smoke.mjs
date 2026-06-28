@@ -140,6 +140,12 @@ try {
   assert.match(initRepo.result.content[0].text, /created AGENTS.md/);
   assert.ok(existsSync(join(tmpRoot, "AGENTS.md")));
   assert.ok(existsSync(join(tmpRoot, ".agents", "skills", "airlock-mcp", "SKILL.md")));
+  const generatedAgents = readFileSync(join(tmpRoot, "AGENTS.md"), "utf8");
+  assert.match(generatedAgents, /agent\.get_reference_record/);
+  assert.match(generatedAgents, /observe\.usage_limits/);
+  const generatedSkill = readFileSync(join(tmpRoot, ".agents", "skills", "airlock-mcp", "SKILL.md"), "utf8");
+  assert.match(generatedSkill, /restricted_reference/);
+  assert.match(generatedSkill, /agent\.get_reference_record/);
 
   const initWorkspace = handleMcpRequest({
     jsonrpc: "2.0",
@@ -218,9 +224,13 @@ try {
   assert.ok(existsSync(join(tmpRoot, "app", "airlock", "specs.manifest.json")));
   assert.ok(existsSync(join(tmpRoot, "app", "airlock", "spec-snapshots", "posts.spec.config.json")));
   assert.ok(existsSync(join(tmpRoot, "app", "airlock", "sample-records", "posts.sample.records.json")));
+  const appAgents = readFileSync(join(tmpRoot, "app", "airlock", "AGENTS.md"), "utf8");
+  assert.match(appAgents, /agent\.get_reference_record/);
+  assert.match(appAgents, /observe\.usage_limit/);
   const appManifest = JSON.parse(readFileSync(join(tmpRoot, "app", "airlock", "specs.manifest.json"), "utf8"));
   assert.equal(appManifest.mode, "co-development");
   assert.equal(appManifest.specs[0].snapshot_only, true);
+  assert.match(appManifest.installed_airlock_contract.restricted_reference, /agent\.get_reference_record/);
 } finally {
   rmSync(tmpRoot, { recursive: true, force: true });
 }
@@ -233,7 +243,7 @@ const input = [
     params: {
       protocolVersion: "2025-06-18",
       capabilities: {},
-      clientInfo: { name: "test", version: "0.1.4" },
+      clientInfo: { name: "test", version: "0.1.5" },
     },
   },
   { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
@@ -276,7 +286,7 @@ const responses = server.stdout
 
 assert.equal(responses.length, 9);
 assert.equal(responses[0].result.serverInfo.name, "airlock");
-assert.equal(responses[0].result.serverInfo.version, "0.1.4");
+assert.equal(responses[0].result.serverInfo.version, "0.1.5");
 assert.equal(responses[1].result.tools[0].name, "airlock_start");
 assert.equal(responses[1].result.tools[0].description, "Return Airlock MCP setup guidance for specs and apps that use specs.");
 assert.equal(responses[2].result.prompts[0].name, "airlock-start");
@@ -302,6 +312,8 @@ assert.match(responses[5].result.messages[0].content.text, /Git repo/);
 assert.match(responses[5].result.messages[0].content.text, /where the home-specs/);
 assert.match(responses[5].result.messages[0].content.text, /spec-first, app-first, or co-development/);
 assert.match(responses[5].result.messages[0].content.text, /airlock-mcp init-app-context/);
+assert.match(responses[5].result.messages[0].content.text, /agent\.get_reference_record/);
+assert.match(responses[5].result.messages[0].content.text, /observe\.usage_limits/);
 assert.match(responses[5].result.messages[0].content.text, /airlock\.observe\.\*/);
 assert.match(responses[5].result.messages[0].content.text, /observe\.governance_map/);
 assert.match(responses[5].result.messages[0].content.text, /admin\.list_specs/);
