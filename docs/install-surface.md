@@ -38,6 +38,14 @@ known lookup value and purpose, with `observe.reference_context`,
 `observe.explain_access(action => 'get_reference_record', object_key => ...)`
 for planning and audit.
 
+The installed Streamlit Native App also provides governed attachment
+inspection: inline image/text previews and bounded, page-at-a-time PDF preview
+for documents up to 100 MB and 2,000 pages. The selected PDF page warms the next
+two pages in the session cache; large PDFs require explicit open, and full-file
+access uses Snowflake download links when available. Successful PDF page
+previews emit metadata-only `ATTACHMENT_PREVIEW` activity. This UI capability
+does not grant MCP clients direct stage access.
+
 The connector package and MCP server live in `reunionstudio/airlock-mcp`.
 This workbench provides the spec-building implementation inside that one
 installed Airlock MCP experience.

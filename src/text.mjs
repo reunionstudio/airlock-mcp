@@ -79,6 +79,12 @@ role lens. It returns at most one record, applies reference row filters, checks
 \`observe.reference_context\`, \`observe.usage_limits\`, \`observe.usage_limit\`,
 and \`observe.explain_access(action => 'get_reference_record', object_key => ...)\`
 for read-only planning and audit.
+Attachments remain governed evidence. Agents should discover and manage them
+through installed Airlock procedures, not by reading Airlock-owned stages.
+The Streamlit Native App can preview images/text and bounded page-at-a-time
+PDFs up to 100 MB and 2,000 pages; PDFs larger than 12 MB require explicit
+open. Successful page previews emit metadata-only \`ATTACHMENT_PREVIEW\`
+activity and do not grant MCP clients direct attachment bytes.
 
 Do not use retired admin read wrappers such as
 \`admin.list_specs\`, \`admin.describe_role\`, or \`admin.list_events\`; use
@@ -204,6 +210,9 @@ read wrappers such as \`admin.list_specs\`, \`admin.describe_role\`, or
 \`reference_config.restricted_reference\`, do not enumerate the protected
 reference; use \`agent.get_reference_record\` for a known lookup value and
 \`observe.usage_limits\` / \`observe.usage_limit\` for budget visibility. It can
+also explain governed attachment preview: Streamlit can preview images/text and
+bounded PDF pages, while \`ATTACHMENT_PREVIEW\` remains metadata-only and agents
+must use Airlock procedures instead of direct stage reads. Airlock MCP can
 seed an app repo with \`airlock/specs.manifest.json\`, spec snapshots, sample
 records, and generated helper folders. The app should submit decisions,
 approvals, actions, comments, or follow-ups through Airlock spec contracts, not

@@ -246,6 +246,17 @@ For read-only planning and audit, use `observe.reference_context`,
 `observe.explain_access(action => 'get_reference_record', object_key => ...)`
 without querying raw reference rows.
 
+Attachments remain governed evidence. Agents should discover and manage them
+through installed Airlock procedures, not by reading Airlock-owned stages or
+generated storage directly. The Streamlit Native App can preview images and
+text inline and can render bounded page-at-a-time PDF previews for files up to
+100 MB and 2,000 pages. PDFs larger than 12 MB require an explicit open action;
+the selected page and next two pages warm a private session cache. Full-file
+download remains a short-lived Snowflake link when available. Successful PDF
+page previews emit metadata-only `ATTACHMENT_PREVIEW` activity, never document
+content or stage URLs. This UI preview capability does not grant MCP clients
+direct attachment bytes.
+
 Help the app follow the loop:
 
 - Observe/read: fetch existing governed data through approved Airlock or

@@ -187,6 +187,17 @@ budgeting. Use `observe.reference_context`, `observe.usage_limits`,
 `observe.explain_access(action => 'get_reference_record', object_key => ...)`
 for planning and audit without reading raw reference rows.
 
+## Governed Attachment Preview
+
+Attachments remain governed evidence. Agents should discover and manage them
+through installed Airlock procedures rather than reading Airlock-owned stages.
+In the Streamlit Native App, images and text can preview inline, and PDFs up to
+100 MB and 2,000 pages can render one selected page at a time. Airlock renders a
+bounded three-page window so the next two pages are normally session-cache
+hits; PDFs larger than 12 MB require an explicit open action. Full-file download
+remains available through a short-lived Snowflake link when the runtime can
+create one. Preview activity emits metadata-only `ATTACHMENT_PREVIEW` events.
+
 The app should follow the loop:
 
 1. Observe/read governed records through approved Airlock or Snowflake surfaces.

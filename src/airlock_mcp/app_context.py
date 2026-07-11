@@ -54,6 +54,14 @@ purpose, and role lens. Use `observe.reference_context`,
 `observe.explain_access(action => 'get_reference_record', object_key => ...)`
 for planning and audit without reading raw reference rows.
 
+Attachments remain governed evidence. Agents should discover and manage them
+through installed Airlock procedures, not by reading Airlock-owned stages.
+The Streamlit Native App can preview images and text inline and can render
+bounded page-at-a-time PDF previews for files up to 100 MB and 2,000 pages.
+PDFs larger than 12 MB require explicit open; successful page previews emit
+metadata-only `ATTACHMENT_PREVIEW` activity and do not grant MCP clients direct
+attachment bytes.
+
 Do not store credentials here. Do not write directly to Airlock-owned tables,
 stages, generated views, or generated tables. Use approved Airlock/Snowflake
 access paths and submit governed decisions or actions through spec contracts.
@@ -102,6 +110,11 @@ known lookup value and purpose, and use `observe.reference_context`,
 `observe.usage_limits`, `observe.usage_limit`, and
 `observe.explain_access(action => 'get_reference_record', object_key => ...)`
 for planning and audit.
+
+For attachments, use installed Airlock procedures and governed UI surfaces.
+The Streamlit Native App can preview images/text and bounded PDF pages, but
+`ATTACHMENT_PREVIEW` activity is metadata-only and MCP clients must not read
+Airlock-owned stages directly.
 """
 
 
@@ -162,6 +175,7 @@ def _manifest(mode: str, entries: list[dict[str, Any]]) -> dict[str, Any]:
             "agent": "governed agent work in the actor scope",
             "admin": "administrative mutation and operational changes",
             "restricted_reference": "one-record reference lookup through agent.get_reference_record; do not enumerate protected reference paths",
+            "attachment_preview": "governed Streamlit preview emits metadata-only ATTACHMENT_PREVIEW; MCP clients do not get direct stage access",
         },
         "specs": entries,
         "tracks": {

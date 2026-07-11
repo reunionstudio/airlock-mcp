@@ -240,6 +240,18 @@ inspect `observe.usage_limits`, `observe.usage_limit`, and
 `observe.explain_access(action => 'get_reference_record', object_key => ...)`
 without reading raw reference rows.
 
+Airlock's Streamlit Native App can inspect governed attachment evidence without
+moving it into a separate document service. Images and text preview inline.
+PDFs up to 100 MB and 2,000 pages render one selected page at a time; the
+selected page and next two pages are loaded as one bounded window so ordinary
+forward navigation can use the session cache. PDFs larger than 12 MB require an
+explicit open action. Rendering is bounded by time, dimensions, concurrency,
+output size, session storage, and expiry, while full-file access remains a
+short-lived Snowflake download when available. Successful PDF page previews
+emit metadata-only `ATTACHMENT_PREVIEW` activity. This human-facing capability
+does not permit an MCP agent to bypass attachment procedures or read underlying
+stage objects directly.
+
 For governed Markdown knowledge, use the `okf-knowledge-bundle` pattern. It
 sets `core_config.payload_adapter` to `okf_knowledge_bundle` so installed
 Airlock can load locally validated bundles through

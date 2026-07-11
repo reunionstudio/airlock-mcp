@@ -212,6 +212,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("Artifacts And Libraries", skill)
             self.assertIn("Apps And Workflows Using Existing Specs", skill)
             self.assertIn("airlock-specs", skill)
+            self.assertIn("ATTACHMENT_PREVIEW", skill)
 
             agents_path = root / "AGENTS.md"
             agents_text = agents_path.read_text(encoding="utf-8")
@@ -224,6 +225,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("init-app-context", agents_text)
             self.assertIn("observe.*", agents_text)
             self.assertIn("observe.explain_access", agents_text)
+            self.assertIn("ATTACHMENT_PREVIEW", agents_text)
             self.assertIn("Do not write directly to Airlock-owned tables", agents_text)
             self.assertIn("CSV or Excel files", agents_text)
             self.assertIn("current API docs", agents_text)
@@ -494,6 +496,9 @@ States, pushback, due dates, order, or cadence: local validation before Airlock 
         self.assertIn("npx @reunionstudio/airlock-mcp install", install_surface)
         self.assertIn("codex mcp add airlock", install_surface)
         self.assertIn("single installed interface", install_surface)
+        self.assertIn("ATTACHMENT_PREVIEW", readme)
+        self.assertIn("ATTACHMENT_PREVIEW", install_surface)
+        self.assertIn("ATTACHMENT_PREVIEW", workflows)
         self.assertIn("Git-backed `<project>-specs`", install_surface)
         self.assertIn("ask where the directory", install_surface)
         self.assertIn("spec-first, app-first from existing specs, or", install_surface)

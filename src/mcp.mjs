@@ -44,7 +44,7 @@ export function handleMcpRequest(message) {
       },
       serverInfo: {
         name: "airlock",
-        version: "0.1.5",
+        version: "0.1.6",
       },
       instructions:
         "Airlock MCP helps agents improve processes with Airlock specs and build apps or workflows that use existing specs. Use airlock_start for orientation or the airlock_* tools to bootstrap, draft, check, summarize, export, and render specs.",

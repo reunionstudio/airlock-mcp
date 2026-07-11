@@ -139,6 +139,15 @@ value, purpose, and role lens. Use `observe.usage_limits`,
 `observe.explain_access(action => 'get_reference_record', object_key => ...)`
 for planning and audit without reading raw reference rows.
 
+Attachments remain governed evidence. Agents should discover and manage them
+through installed Airlock procedures, not by reading Airlock-owned stages
+directly. The Streamlit Native App can preview images and text inline and can
+render bounded page-at-a-time PDF previews for files up to 100 MB and 2,000
+pages. PDFs larger than 12 MB require an explicit open action; the selected
+page and next two pages warm a private session cache. Successful PDF page
+previews emit metadata-only `ATTACHMENT_PREVIEW` activity and do not grant MCP
+clients direct attachment bytes.
+
 The app may orient the user with summaries, comparisons, rankings, exception
 queues, proposals, or dashboards. It should submit governed choices back
 through an Airlock spec contract. Do not write directly to Airlock-owned tables,
