@@ -44,11 +44,62 @@ Current Airlock separates procedure intent:
   specs, validating/loading data, workflow actions, attachments, delegations,
   and references.
 
+Use `airlock.agent.list_my_work(...)` for the current actor's unified workflow,
+watcher, deadline, overdue, and exception inbox. Use `airlock.observe.work(...)`
+for the read-only account-wide projection of current work, and
+`airlock.observe.activity(...)` for historical events. The older split work
+procedures are retired.
+
+Watcher agents should poll `airlock.agent.spec_state(...)` before retrieving a
+complete descriptor, file list, or governed dataset. Cache the
+authorization-scoped `STATE_TOKEN` and perform the heavier read only when it
+changes. Poll `airlock.agent.list_my_work(...)` independently because deadlines
+and expectation windows can change with time without rotating a spec token.
+After selecting a logical file, compare
+`airlock.agent.file_state(...).FILE_STATE_ID`; that UUID rotates when its data,
+workflow, attachments, or exact source references change. Observer clients use
+the account-wide read-only `observe.spec_state(...)` and
+`observe.file_state(...)` equivalents.
+
 When building an app or workflow, prefer `observe.*` for read-only setup and
 monitoring questions, `agent.*` for governed submissions in the actor's scope,
 and `admin.*` only for intentional administrative mutation. Do not use retired
 admin read wrappers such as `admin.list_specs`, `admin.describe_role`, or
 `admin.list_events`; use the matching observe procedures instead.
+
+Structural spec changes with active data use Airlock's governed migration
+lifecycle. Agents should preserve the proposed config and guide an
+administrator through immutable revision, declarative migration planning,
+all-row proof, approval, activation, bounded execution, observable lineage, and
+source retirement. `SPEC_MIGRATION_REQUIRED` is a safety boundary; it is not a
+reason to mutate Airlock-owned storage directly.
+
+Migration execution claims bounded work before storage effects. Renamed headers
+produce transformed successors, sequential migrations rely on append-only
+validation attestations, and upgraded files with unknown provenance are
+re-attested in place through normal `load_data`. `source_preserved` protects
+transformed source bytes from ordinary retention purge, while
+`SPEC_MIGRATION_ACTIVE` prevents another data-contract revision until the
+current migration retires.
+
+## Built-In UI And Purpose-Built Apps
+
+Airlock's Streamlit Native App is deliberately a generic operating and fallback
+surface. It supports administration, inspection, governed data and attachment
+review, workflow visibility, and safe manual action. It should not be treated as
+a universal domain application builder.
+
+Repeated, high-value decisions such as reimbursements, vendor onboarding, or
+employee-record changes may deserve purpose-built interfaces. Airlock MCP should
+recommend app-first or co-development for those cases and help build the custom
+surface against Airlock contracts. The app owns domain summaries,
+calculations, terminology, and interaction design; Airlock continues to own
+access, validation, expectations, evidence, workflow, activity, and observable
+governance.
+
+Do not add UI layout or aggregation fields to a spec merely to make the generic
+Native App imitate custom software. Presentation belongs in app code unless it
+is genuinely governed business semantics shared across interfaces.
 
 ## Install
 
@@ -220,6 +271,31 @@ For app-first work against installed Airlock, start with `observe.procedures`,
 `observe.explain_access`, `observe.health`, and the relevant context packet
 before designing direct SQL helpers. These payloads are intended to be useful
 to agents as well as humans.
+
+For operational queues, call `agent.list_my_work` in the actor's scope. An
+observer may call `observe.work` for all current work; historical questions
+belong to `observe.activity`.
+
+Required source references are a governed submission contract. When a
+downstream spec has an active source link with `min_count > 0`, load the file
+into Draft, discover eligible evidence with `agent.list_eligible_source_files`,
+pin exact manifest rows with `agent.add_file_reference`, and only then call
+`agent.edit_file_workflow(action => 'advance')`. Missing, removed, or
+wrong-workflow-state evidence returns `SOURCE_REFERENCE_REQUIRED` without
+moving the file. Do not replace the exact Airlock reference with a filename or
+identifier copied into business data.
+
+Structural spec changes with active files use Airlock's governed two-version
+migration lifecycle. Treat `SPEC_MIGRATION_REQUIRED` as a request to create an
+immutable revision and migration, validate and approve it, activate the target,
+drain bounded batches with `admin.run_spec_migration`, inspect progress and
+lineage through `observe.spec_migration`, and retire the source only after the
+evidence gate passes. Use `observe.spec_migrations` to discover and filter
+migrations. Before activation, an abandoned `draft`, `planned`, `validated`, or
+`approved` migration may be released with `admin.cancel_spec_migration`;
+cancellation is not rollback after activation. The transform language is intentionally limited to
+mechanical mappings, defaults, and safe casts; semantic transforms belong in a
+purpose-built process that reloads through normal Airlock validation.
 
 Restricted references are one-record interaction contracts. When
 `observe.reference_context`, `observe.spec_config`, or `agent.describe_spec`

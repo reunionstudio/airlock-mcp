@@ -62,9 +62,29 @@ administrative mutation. Prefer observe payloads such as
 \`observe.activity\`, \`observe.admin_activity\`, \`observe.spec_admin_activity\`,
 and \`observe.billing_events\` before inventing custom read paths. For \`alter_spec\`
 activity, use \`CHANGED_SECTIONS\` and \`CHANGED_FIELDS\` to triage what changed
-before fetching version snapshots. Offer to run \`airlock-mcp init-app-context\`
+before fetching version snapshots. For watcher loops, cache the role-scoped
+\`agent.spec_state(...).STATE_TOKEN\` and do larger reads only when it changes.
+After selecting one logical file, compare
+\`agent.file_state(...).FILE_STATE_ID\` to detect data, workflow, attachment,
+or exact-reference changes. Observer services may use the account-wide
+\`observe.spec_state\` and \`observe.file_state\` equivalents. Offer to run \`airlock-mcp init-app-context\`
 in the app repo to seed \`airlock/specs.manifest.json\`, spec snapshots, sample records, and
 generated helper folders. Help code the app using approved Airlock/Snowflake access paths.
+Treat Airlock's built-in Streamlit app as a generic operating and fallback
+surface, not a universal domain app. When a repeated, high-value decision needs
+domain-specific summaries, calculations, evidence layout, terminology, or
+controls, recommend a purpose-built app and use Airlock as its governed backend.
+Keep those presentation choices in app code; do not add layout or aggregation
+fields to a spec merely to improve the generic UI.
+When a structural spec change with active files returns
+\`SPEC_MIGRATION_REQUIRED\`, use Airlock's governed two-version lifecycle:
+create the immutable revision and migration, validate and approve it, activate
+the target, drain bounded \`admin.run_spec_migration\` batches, inspect
+\`observe.spec_migrations\` and \`observe.spec_migration\`, and retire the source
+only after it is drained. Before activation, an abandoned migration may use
+\`admin.cancel_spec_migration\`; cancellation is not post-activation rollback.
+Use the declarative mechanical transform; semantic transforms belong in a
+purpose-built process that reloads through normal Airlock validation.
 When a reference spec declares \`restricted_reference\` or
 \`reference_config.restricted_reference\`, do not enumerate values, build a
 populated picker, or call broad \`agent.select_reference_data\`. Get the lookup
@@ -111,6 +131,7 @@ Airlock MCP will offer:
   - spec design with the bundled workbench
   - Airlock operating patterns for OODA loops and separation of duties
   - read-only observe procedures for governance maps, health, access explanation, activity, billing events, and context packets
+  - scoped spec and file state tokens for efficient watcher polling
   - app context seeding with spec snapshots and manifests
   - app and workflow coding against existing Airlock specs
   - observe specs for controlled interface ingestion
@@ -204,7 +225,11 @@ read-side discovery with observe payloads such as \`observe.procedures\`,
 \`observe.explain_access\`, \`observe.health\`, \`observe.activity\`,
 \`observe.admin_activity\`, \`observe.spec_admin_activity\`, and \`observe.billing_events\`;
 for \`alter_spec\` activity, use \`CHANGED_SECTIONS\` and \`CHANGED_FIELDS\` to
-triage what changed before fetching version snapshots. Do not use retired admin
+triage what changed before fetching version snapshots. For watcher loops, poll
+\`agent.spec_state\` and compare its scoped \`STATE_TOKEN\` before larger reads;
+compare \`agent.file_state(...).FILE_STATE_ID\` for one selected file. Observer
+services use \`observe.spec_state\` and \`observe.file_state\` for account-wide
+read-only state. Do not use retired admin
 read wrappers such as \`admin.list_specs\`, \`admin.describe_role\`, or
 \`admin.list_events\`. If a reference spec declares \`restricted_reference\` or
 \`reference_config.restricted_reference\`, do not enumerate the protected
@@ -216,7 +241,17 @@ must use Airlock procedures instead of direct stage reads. Airlock MCP can
 seed an app repo with \`airlock/specs.manifest.json\`, spec snapshots, sample
 records, and generated helper folders. The app should submit decisions,
 approvals, actions, comments, or follow-ups through Airlock spec contracts, not
-direct table writes.
+direct table writes. Treat the built-in Streamlit app as a generic
+operating/fallback surface. Recommend a purpose-built app when recurring,
+high-value domain work benefits from specialized summaries, calculations,
+evidence presentation, terminology, or controls. Keep those choices in app code
+rather than adding UI layout or aggregation hints to Airlock specs. For a
+structural spec change with active files, treat \`SPEC_MIGRATION_REQUIRED\` as
+the governed two-version lifecycle: use immutable revisions, bounded
+\`admin.run_spec_migration\` calls, \`observe.spec_migrations\` discovery,
+\`observe.spec_migration\` evidence, and guarded source retirement instead of
+direct table, stage, or view changes. \`admin.cancel_spec_migration\` is only a
+pre-activation abandonment path, not rollback.
 In co-development mode, keep the spec track and app track visible side by side.`;
 }
 

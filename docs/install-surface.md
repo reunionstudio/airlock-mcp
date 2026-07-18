@@ -46,6 +46,15 @@ access uses Snowflake download links when available. Successful PDF page
 previews emit metadata-only `ATTACHMENT_PREVIEW` activity. This UI capability
 does not grant MCP clients direct stage access.
 
+The Native App is deliberately a generic operating and fallback surface. It
+should support administration, inspection, evidence, workflow, and safe manual
+action without accumulating every domain's presentation rules. Airlock MCP
+should recommend app-first or co-development when repeated, high-value work
+deserves a purpose-built interface. The custom app owns domain summaries,
+calculations, terminology, and controls while Airlock remains the governed
+backend. UI layout and aggregation hints should not be added to specs merely to
+polish the generic app.
+
 The connector package and MCP server live in `reunionstudio/airlock-mcp`.
 This workbench provides the spec-building implementation inside that one
 installed Airlock MCP experience.

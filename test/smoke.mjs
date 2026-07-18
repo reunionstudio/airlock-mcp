@@ -43,6 +43,7 @@ assert.match(install.stdout, /Airlock MCP will offer/);
 assert.match(install.stdout, /process discovery before choosing a spec pattern/);
 assert.match(install.stdout, /Airlock operating patterns/);
 assert.match(install.stdout, /app and workflow coding against existing Airlock specs/);
+assert.match(install.stdout, /purpose-built app/);
 assert.doesNotMatch(install.stdout, /Airlock Star/);
 
 assert.equal(specsRepoName("Home"), "home-specs");
@@ -144,10 +145,17 @@ try {
   assert.match(generatedAgents, /agent\.get_reference_record/);
   assert.match(generatedAgents, /observe\.usage_limits/);
   assert.match(generatedAgents, /ATTACHMENT_PREVIEW/);
+  assert.match(generatedAgents, /SPEC_MIGRATION_REQUIRED/);
+  assert.match(generatedAgents, /observe\.spec_migrations/);
+  assert.match(generatedAgents, /observe\.spec_migration/);
+  assert.match(generatedAgents, /admin\.cancel_spec_migration/);
+  assert.match(generatedAgents, /generic operating and\s+fallback surface/);
+  assert.match(generatedAgents, /purpose-built app/);
   const generatedSkill = readFileSync(join(tmpRoot, ".agents", "skills", "airlock-mcp", "SKILL.md"), "utf8");
   assert.match(generatedSkill, /restricted_reference/);
   assert.match(generatedSkill, /agent\.get_reference_record/);
   assert.match(generatedSkill, /ATTACHMENT_PREVIEW/);
+  assert.match(generatedSkill, /purpose-built app/);
 
   const initWorkspace = handleMcpRequest({
     jsonrpc: "2.0",
@@ -230,11 +238,19 @@ try {
   assert.match(appAgents, /agent\.get_reference_record/);
   assert.match(appAgents, /observe\.usage_limit/);
   assert.match(appAgents, /ATTACHMENT_PREVIEW/);
+  assert.match(appAgents, /SPEC_MIGRATION_REQUIRED/);
+  assert.match(appAgents, /observe\.spec_migrations/);
+  assert.match(appAgents, /observe\.spec_migration/);
+  assert.match(appAgents, /admin\.cancel_spec_migration/);
+  assert.match(appAgents, /purpose-built interface/);
   const appManifest = JSON.parse(readFileSync(join(tmpRoot, "app", "airlock", "specs.manifest.json"), "utf8"));
   assert.equal(appManifest.mode, "co-development");
   assert.equal(appManifest.specs[0].snapshot_only, true);
   assert.match(appManifest.installed_airlock_contract.restricted_reference, /agent\.get_reference_record/);
   assert.match(appManifest.installed_airlock_contract.attachment_preview, /ATTACHMENT_PREVIEW/);
+  assert.match(appManifest.installed_airlock_contract.spec_migration, /two-version lifecycle/);
+  assert.match(appManifest.installed_airlock_contract.spec_migration, /cancel only before activation/);
+  assert.match(appManifest.installed_airlock_contract.application_surface, /purpose-built apps/);
 } finally {
   rmSync(tmpRoot, { recursive: true, force: true });
 }

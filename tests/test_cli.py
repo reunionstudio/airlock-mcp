@@ -225,7 +225,13 @@ class CliTests(unittest.TestCase):
             self.assertIn("init-app-context", agents_text)
             self.assertIn("observe.*", agents_text)
             self.assertIn("observe.explain_access", agents_text)
+            self.assertIn("SPEC_MIGRATION_REQUIRED", agents_text)
+            self.assertIn("observe.spec_migrations", agents_text)
+            self.assertIn("observe.spec_migration", agents_text)
+            self.assertIn("admin.cancel_spec_migration", agents_text)
             self.assertIn("ATTACHMENT_PREVIEW", agents_text)
+            self.assertRegex(agents_text, r"generic operating and\s+fallback surface")
+            self.assertIn("purpose-built app", agents_text)
             self.assertIn("Do not write directly to Airlock-owned tables", agents_text)
             self.assertIn("CSV or Excel files", agents_text)
             self.assertIn("current API docs", agents_text)
@@ -281,6 +287,22 @@ class CliTests(unittest.TestCase):
             self.assertEqual(
                 manifest["installed_airlock_contract"]["observe"],
                 "read-only governance observation, context, activity, health, billing events, and access explanation",
+            )
+            self.assertIn(
+                "purpose-built apps",
+                manifest["installed_airlock_contract"]["application_surface"],
+            )
+            self.assertIn(
+                "two-version lifecycle",
+                manifest["installed_airlock_contract"]["spec_migration"],
+            )
+            self.assertIn(
+                "cancel only before activation",
+                manifest["installed_airlock_contract"]["spec_migration"],
+            )
+            self.assertIn(
+                "purpose-built interface",
+                (airlock / "AGENTS.md").read_text(encoding="utf-8"),
             )
             self.assertEqual(manifest["specs"][0]["spec_name"], "posts")
             self.assertEqual(manifest["specs"][0]["role"], "unknown")

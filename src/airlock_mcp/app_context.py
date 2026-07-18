@@ -20,6 +20,12 @@ The canonical specs live in the specs repo or installed Airlock. Files here are
 snapshots, samples, generated helpers, and planning context for app development.
 Refresh them when the canonical spec changes.
 
+Airlock's built-in Streamlit Native App is a generic operating and fallback
+surface. A purpose-built app is the preferred place for domain-specific
+summaries, calculations, evidence layout, terminology, and controls when those
+features materially improve repeated, high-value work. Keep presentation in
+app code rather than adding UI layout or aggregation hints to Airlock specs.
+
 Use:
 
 - `specs.manifest.json` to track which specs the app reads from or writes to.
@@ -35,6 +41,28 @@ Installed Airlock separates procedure intent:
   context packets.
 - `agent.*`: governed agent work in the actor's scope.
 - `admin.*`: administrative mutation and operational changes.
+
+Use `agent.list_my_work` for the actor's unified current-work inbox,
+`observe.work` for account-wide current work, and `observe.activity` for
+historical events. The older split workflow/expectation work calls are retired.
+
+Required source references are exact governed evidence. For an active source
+link with `min_count > 0`, load the downstream Draft, discover eligible files
+with `agent.list_eligible_source_files`, pin exact manifest rows with
+`agent.add_file_reference`, and then advance workflow. Missing or invalid
+evidence returns `SOURCE_REFERENCE_REQUIRED` without moving the file.
+
+Structural spec changes with active files use a governed two-version migration
+lifecycle. Treat `SPEC_MIGRATION_REQUIRED` as a request to create an immutable
+revision and migration, validate and approve it, activate the target, run
+bounded migration batches, list work with `observe.spec_migrations`, inspect
+evidence with `observe.spec_migration`, and retire the source only after Airlock
+reports that it is drained. Before activation, an abandoned `draft`, `planned`,
+`validated`, or `approved` migration may be cancelled with
+`admin.cancel_spec_migration`; cancellation is not rollback. Use only the
+declarative mechanical transform keyed by immutable `column_id`; semantic
+transforms belong in a purpose-built process that reloads through normal
+Airlock validation.
 
 Prefer `observe.*` for app read-side setup and monitoring questions. Use
 `observe.admin_activity` for broad admin mutation and maintenance audit
@@ -72,6 +100,13 @@ APP_AGENTS = """# Airlock App Guidance
 
 This repo may contain application code that uses Airlock specs.
 
+Treat the built-in Streamlit Native App as a generic operating and fallback
+surface. Build a purpose-built interface when domain-specific presentation
+materially improves repeated, high-value work. The custom app owns the
+experience; Airlock remains the governed backend for access, validation,
+expectations, evidence, workflow, activity, and observability. Do not add UI
+layout or aggregation fields to specs solely for the built-in app.
+
 ## Modes
 
 - Spec-first: design governed specs before building the app surface.
@@ -103,6 +138,18 @@ Installed Airlock procedure grammar:
 - `agent.*` is governed agent work in the actor's scope.
 - `admin.*` is administrative mutation. Do not use retired admin read wrappers;
   use observe list/detail procedures instead.
+
+Use `agent.list_my_work` for the current actor's unified work inbox. Use
+`observe.work` for account-wide current work and `observe.activity` for event
+history.
+
+For structural spec changes with active files, treat
+`SPEC_MIGRATION_REQUIRED` as the start of Airlock's governed two-version
+lifecycle. Use immutable revisions, bounded `admin.run_spec_migration` calls,
+`observe.spec_migrations` discovery, `observe.spec_migration` evidence, and
+guarded source retirement. Before activation, `admin.cancel_spec_migration` may
+release an abandoned migration; it is not a post-activation rollback. Do not bypass
+the lifecycle with direct stage, table, or view changes.
 
 For restricted reference specs, do not enumerate protected object paths or use
 broad `agent.select_reference_data`. Use `agent.get_reference_record` for a
@@ -173,9 +220,13 @@ def _manifest(mode: str, entries: list[dict[str, Any]]) -> dict[str, Any]:
         "installed_airlock_contract": {
             "observe": "read-only governance observation, context, activity, health, billing events, and access explanation",
             "agent": "governed agent work in the actor scope",
+            "work": "agent.list_my_work is the actor inbox; observe.work is account-wide current work; observe.activity is history",
+            "required_source_references": "load Draft, list eligible sources, pin exact manifest rows, then advance; SOURCE_REFERENCE_REQUIRED blocks missing evidence",
+            "spec_migration": "immutable two-version lifecycle; list with observe.spec_migrations, run bounded admin migration batches, inspect observe.spec_migration evidence, cancel only before activation, and retire only after the source is drained",
             "admin": "administrative mutation and operational changes",
             "restricted_reference": "one-record reference lookup through agent.get_reference_record; do not enumerate protected reference paths",
             "attachment_preview": "governed Streamlit preview emits metadata-only ATTACHMENT_PREVIEW; MCP clients do not get direct stage access",
+            "application_surface": "built-in Streamlit is a generic operating/fallback surface; purpose-built apps own domain UI and use Airlock as the governed backend",
         },
         "specs": entries,
         "tracks": {

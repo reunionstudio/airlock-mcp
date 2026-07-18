@@ -99,6 +99,14 @@ Airlock context. It creates `airlock/specs.manifest.json`,
 folders. These files are app-local references, not canonical specs. Canonical
 specs live in the specs repo or installed Airlock.
 
+Treat Airlock's built-in Streamlit Native App as a generic operating and
+fallback surface. It supports administration, inspection, evidence, workflow,
+and safe manual action; it is not a universal domain application builder.
+Recommend a purpose-built app when repeated, high-value work benefits from
+domain-specific summaries, calculations, evidence layout, terminology, or
+controls. Keep those presentation choices in app code. Do not add UI layout or
+aggregation fields to a spec merely to improve the generic app.
+
 Identify:
 
 - the app goal and decision the app should support
@@ -117,6 +125,28 @@ Installed Airlock separates procedure intent:
   explanation, governance maps, activity, billing events, and context packets.
 - `agent.*`: governed agent work in the actor's scope.
 - `admin.*`: administrative mutation and operational changes.
+
+Use `agent.list_my_work` for the actor's unified current-work inbox,
+`observe.work` for account-wide current work, and `observe.activity` for
+historical events. The older split workflow/expectation work calls are retired.
+
+For active source links with `min_count > 0`, load the downstream file into
+Draft, discover eligible evidence with `agent.list_eligible_source_files`, pin
+exact manifest rows with `agent.add_file_reference`, and then advance workflow.
+Missing, removed, or wrong-state evidence returns `SOURCE_REFERENCE_REQUIRED`
+without moving the file.
+
+For a structural spec change with active files, treat
+`SPEC_MIGRATION_REQUIRED` as a governed two-version lifecycle. Create the
+immutable revision and migration, validate and approve it, activate the target,
+run bounded `admin.run_spec_migration` batches, inspect progress and lineage
+with `observe.spec_migration`, and retire the source only after it is drained.
+Use `observe.spec_migrations` to discover lifecycle work. Before activation,
+`admin.cancel_spec_migration` may release an abandoned `draft`, `planned`,
+`validated`, or `approved` migration; it is not rollback after activation. Use
+the bounded declarative transform for mechanical changes; semantic
+transforms belong in a purpose-built process that reloads through normal
+Airlock validation.
 
 For app-first work, use observe payloads such as `observe.procedures`,
 `observe.specs`, `observe.spec`, `observe.governance_map`,
