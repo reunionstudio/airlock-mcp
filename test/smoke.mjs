@@ -21,7 +21,10 @@ const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL("../package.js
 assert.equal(packageJson.name, "@reunionstudio/airlock-mcp");
 assert.equal(packageJson.bin["airlock-mcp"], "bin/airlock-mcp.mjs");
 assert.ok(statSync(bin).mode & 0o111, "bin/airlock-mcp.mjs should be executable");
+assert.ok(packageJson.files.includes("src/*.mjs"));
+assert.ok(packageJson.files.includes("src/airlock_mcp/*.py"));
 for (const file of packageJson.files) {
+  if (file.includes("*")) continue;
   assert.ok(existsSync(fileURLToPath(new URL(`../${file}`, import.meta.url))), `package file entry exists: ${file}`);
 }
 
@@ -263,7 +266,7 @@ const input = [
     params: {
       protocolVersion: "2025-06-18",
       capabilities: {},
-      clientInfo: { name: "test", version: "0.1.6" },
+      clientInfo: { name: "test", version: "0.1.7" },
     },
   },
   { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
@@ -306,7 +309,7 @@ const responses = server.stdout
 
 assert.equal(responses.length, 9);
 assert.equal(responses[0].result.serverInfo.name, "airlock");
-assert.equal(responses[0].result.serverInfo.version, "0.1.6");
+assert.equal(responses[0].result.serverInfo.version, "0.1.7");
 assert.equal(responses[1].result.tools[0].name, "airlock_start");
 assert.equal(responses[1].result.tools[0].description, "Return Airlock MCP setup guidance for specs and apps that use specs.");
 assert.equal(responses[2].result.prompts[0].name, "airlock-start");

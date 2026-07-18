@@ -27,7 +27,7 @@ def data_files():
 
 setup(
     name="airlock-mcp",
-    version="0.1.6",
+    version="0.1.7",
     description="Codex-first workbench and CLI for drafting Airlock specs.",
     packages=find_packages("src"),
     package_dir={"": "src"},
